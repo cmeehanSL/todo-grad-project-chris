@@ -1,5 +1,6 @@
 var express = require("express");
 var bodyParser = require("body-parser");
+var _ = require("underscore");
 
 module.exports = function(port, middleware, callback) {
     var app = express();
@@ -23,6 +24,20 @@ module.exports = function(port, middleware, callback) {
         res.sendStatus(201);
     });
 
+    // Update
+    app.post("/api/todo/:id", function(req, res) {
+        var id = req.params.id;
+        var todo = getTodo(id);
+        var updatedTodo = req.body;
+        todos = todos.map(function (currentTodo) {
+            if(currentTodo.id == id) {
+              currentTodo.title = updatedTodo.title;
+            }
+            return currentTodo;
+        });
+
+    });
+
     // Read
     app.get("/api/todo", function(req, res) {
         res.json(todos);
@@ -43,9 +58,9 @@ module.exports = function(port, middleware, callback) {
     });
 
     function getTodo(id) {
-        return todos.filter(function(todo) {
+        return _.find(todos, function(todo) {
             return todo.id === id;
-        })[0];
+        });
     }
 
     var server = app.listen(port, callback);
