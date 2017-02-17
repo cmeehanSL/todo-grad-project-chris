@@ -1,7 +1,7 @@
 {
   "name": "todo-grad-project",
   "version": "1.0.0",
-  "description": "",
+  "description": "A to-do list",
   "main": "server.js",
   "directories": {
     "test": "test"

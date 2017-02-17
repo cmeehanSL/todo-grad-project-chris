@@ -6,7 +6,7 @@ body {
 }
 
 header {
-    background-color: #4CAF50;
+    background-color: #cc00ff;
     padding: 0.5em 1em;
 }
 
@@ -15,6 +15,7 @@ h1 {
     max-width: 1170px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
 }
 
 h1 {
