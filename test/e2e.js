@@ -65,5 +65,57 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("on delete item", function() {
+        testing.it("removes the element from the list", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo item");
+            helpers.addTodo("Second todo item");
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 2);
+            });
+            helpers.deleteTodo(2);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
+        testing.it("can remove multiple elements from list", function () {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo item");
+            helpers.addTodo("Second todo item");
+            helpers.addTodo("Third todo item");
+            helpers.addTodo("Fourth todo item");
+            helpers.deleteTodo(3);
+            helpers.deleteTodo(1);
+            helpers.deleteTodo(2);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
+    });
+    testing.describe("on modify item", function() {
+        testing.it("Doesn't change the size of the list", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo item");
+            helpers.addTodo("Second todo item");
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 2);
+            });
+            helpers.editTodo(1, "First Modified todo item");
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 2);
+            });
+        });
+        testing.it("Changes the title successfully", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo item");
+            helpers.addTodo("Second todo item");
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 2);
+            });
+            helpers.editTodo(2, "Modified");
+            helpers.getTodoText(2).then(function(text) {
+                assert.equal(text, "Modified");
+            });
+        });
+    });
 });
-

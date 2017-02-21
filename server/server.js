@@ -25,16 +25,26 @@ module.exports = function(port, middleware, callback) {
     });
 
     // Update
-    app.post("/api/todo/:id", function(req, res) {
+    app.put("/api/todo/:id", function(req, res) {
         var id = req.params.id;
         var todo = getTodo(id);
         var updatedTodo = req.body;
+        var edited = false;
         todos = todos.map(function (currentTodo) {
-            if(currentTodo.id == id) {
-              currentTodo.title = updatedTodo.title;
+            if (currentTodo.id === id) {
+                currentTodo.title = updatedTodo.title;
+                edited = true;
             }
             return currentTodo;
         });
+
+        if (edited) {
+            res.set("Location", "/api/todo/" + id);
+            res.sendStatus(200);
+        }
+        else {
+            res.sendStatus(404);
+        }
 
     });
 
