@@ -23,12 +23,18 @@ h1 {
     line-height: 34px;
     color: rgba(255, 255, 255, 0.87);
     text-align: center;
+    color: green;
 }
 
 #todo-list {
   width: 800px;
   background-color: : green;
 
+}
+
+#removeCompleted {
+  visibility: hidden;
+  display: none;
 }
 
 

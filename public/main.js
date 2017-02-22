@@ -4,6 +4,14 @@ var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var countLabel = document.getElementById("count-label");
+var removeButton = document.getElementById("removeBtn");
+var allTab = document.getElementById("allTab");
+var remainingTab = document.getElementById("remainingTab");
+var completeTab = document.getElementById("completeTab");
+var progress = document.getElementById("progress");
+var displayActive = true, displayComplete = true;
+var globalNumRemaining = 0;
+var globalNumComplete = 0;
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -14,6 +22,37 @@ form.onsubmit = function(event) {
     event.preventDefault();
 };
 
+removeButton.addEventListener("click", function() {
+    clearList();
+});
+
+allTab.firstChild.addEventListener("click", function() {
+    allTab.className = "active";
+    remainingTab.className = completeTab.className = "";
+    displayActive = true;
+    displayComplete = true;
+    reloadTodoList();
+    progress.style.visibility = "visible";
+});
+
+remainingTab.firstChild.addEventListener("click", function() {
+    remainingTab.className = "active";
+    allTab.className = completeTab.className = "";
+    displayActive = true;
+    displayComplete = false;
+    reloadTodoList();
+    progress.style.visibility = "hidden";
+});
+
+completeTab.firstChild.addEventListener("click", function() {
+    completeTab.className = "active";
+    allTab.className = remainingTab.className = "";
+    displayActive = false;
+    displayComplete = true;
+    reloadTodoList();
+    progress.style.visibility = "hidden";
+});
+
 function createTodo(title, callback) {
     var createRequest = new XMLHttpRequest();
     createRequest.open("POST", "/api/todo");
@@ -21,9 +60,9 @@ function createTodo(title, callback) {
     createRequest.send(JSON.stringify({
         title: title
     }));
-    // console.log(JSON.stringify({
-    //     title: title
-    // }));
+    console.log(JSON.stringify({
+        title: title
+    }));
     createRequest.onload = function() {
         if (this.status === 201) {
             callback();
@@ -52,11 +91,11 @@ function deleteItem(id, callback) {
     createRequest.onload = function() {
         if (this.status === 200) {
             console.log("item deleted");
-            callback();
         } else {
             console.log("Unable to delete as not found");
+        }
+        if (typeof callback === "function") {
             callback();
-            // error.textContent = "Failed to delete item. Server returned " + this.status + " - " + this.responseText;
         }
     };
     createRequest.send();
@@ -67,13 +106,27 @@ function reloadTodoList() {
     var tempText;
     var isComplete = false;
     var numRemaining = 0;
+    var numComplete = 0;
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
     }
     todoListPlaceholder.style.display = "block";
+    document.getElementById("removeCompleted").style.visibility = "hidden";
     getTodoList(function(todos) {
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
+            if (!todo.done) {
+                numRemaining++;
+            }
+            else {
+                numComplete++;
+            }
+            if(!displayActive && todo.done == false) {
+                return;
+            }
+            if(!displayComplete && todo.done) {
+                return;
+            }
             isComplete = todo.done;
             var listItem = document.createElement("li");
             var row = document.createElement("div");
@@ -136,8 +189,9 @@ function reloadTodoList() {
 
             var intemEntry = document.createElement("input");
             inputGroup.innerHTML = "<input type='text' class='form-control itemEntry'" +
-              "disabled='disabled' value=" + todo.title + ">";
+              "disabled='disabled'>";
             var itemEntry = inputGroup.firstChild;
+            itemEntry.setAttribute("value", todo.title);
             var confirmEditButton = document.createElement("span");
             confirmEditButton.className = "input-group-btn";
             confirmEditButton.innerHTML = "<button class='btn btn-default confirmEditButton'>Confirm</button>";
@@ -151,7 +205,6 @@ function reloadTodoList() {
 
             if (!todo.done) {
                 doneButton.className += " btn-outline";
-                numRemaining++;
             }
             else {
                 itemEntry.className += " completedItem";
@@ -202,8 +255,33 @@ function reloadTodoList() {
             });
         });
         countLabel.textContent = "Number of Items remaining: " + numRemaining;
-    });
+        if (numComplete > 0) {
+            document.getElementById("removeCompleted").style.visibility = "visible";
+        }
+        allTab.getElementsByClassName("badge")[0].textContent = numRemaining + numComplete;
+        remainingTab.getElementsByClassName("badge")[0].textContent = numRemaining;
+        completeTab.getElementsByClassName("badge")[0].textContent = numComplete;
 
+
+        console.log("num complete is "  + numComplete);
+        globalNumComplete = numComplete;
+        globalNumRemaining = numRemaining;
+        if(displayActive && displayComplete) {
+          refreshBar();
+        }
+    });
+    console.log("numberz complete is "  + globalNumComplete);
+}
+
+function clearList() {
+    getTodoList(function(todos) {
+        todos.forEach(function(todo) {
+            if (todo.done) {
+                deleteItem(todo.id);
+            }
+        });
+        reloadTodoList();
+    });
 }
 
 function confirmEdit(itemEntry, id, tempText, isComplete) {
@@ -232,6 +310,22 @@ function editItem(itemEntry, id, callback, isComplete) {
             // error.textContent = "Failed to delete item. Server returned " + this.status + " - " + this.responseText;
         }
     };
+}
+
+function refreshBar() {
+  var progressBar = progress.getElementsByClassName("progress-bar")[0];
+  console.log("numRemaining is " + globalNumRemaining);
+  var percentage = Math.floor(100 * globalNumComplete / (globalNumRemaining + globalNumComplete));
+  // if (isNan(percentage)) {
+  //   percentage = 0;
+  // }
+  if(globalNumRemaining == 0) {
+    percentage = 0;
+  }
+
+  progressBar.style.width = percentage.toString() + "%";
+  progressBar.textContent = percentage.toString() + "%";
+
 }
 
 reloadTodoList();

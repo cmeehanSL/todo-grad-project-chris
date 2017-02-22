@@ -33,8 +33,10 @@ module.exports = function(port, middleware, callback) {
         var edited = false;
         todos = todos.map(function (currentTodo) {
             if (currentTodo.id === id) {
-                currentTodo.title = updatedTodo.title;
-                currentTodo.done = updatedTodo.done;
+                for (var key in updatedTodo) {
+                    currentTodo[key] = updatedTodo[key];
+
+                }
                 edited = true;
             }
             return currentTodo;

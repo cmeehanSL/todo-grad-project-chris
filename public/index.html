@@ -16,10 +16,24 @@
             <h2 id="todo-list-placeholder">Loading...</h2>
             <div class="jumbotron">
               <div id="count-label"></div>
+
+              <!-- PUT A BOOTSTRAP PROGRESS BAR -->
+
+              <span id="removeCompleted"><button type="button" id="removeBtn" class="btn btn-lg btn-danger btn-outline"><span class="glyphicon glyphicon-trash"></span> Remove Completed</button></span>
+              <ul class="nav nav-pills" role="tablist">
+                  <li role="presentation" id="allTab" class="active"><a href="#">All<span class="badge"></span></a></li>
+                  <li role="presentation" id="remainingTab"><a href="#">Active<span class="badge pull-right"></span></a></li>
+                  <li role="presentation" id="completeTab"><a href="#">Complete<span class="badge pull-right"></span></a></li>
+              </ul>
               <form id="todo-form">
                   <input id="new-todo" placeholder="What needs to be done?" autofocus>
                   <input id="submit-todo" type="submit" value="Create">
               </form>
+            </div>
+            <div id="progress" class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                  60%
+                </div>
             </div>
             <ul id="todo-list"></ul>
             <div id="error"></div>
