@@ -3,22 +3,25 @@
     <head>
         <meta charset="utf-8">
         <title>TODO List</title>
-        <link href="main.css" rel="stylesheet" type="text/css">
+        <link href="css/bootstrap.min.css" rel = "stylesheet" type="text/css">
+        <link href="css/main.css" rel="stylesheet" type="text/css">
         <link rel="icon" type="image/ico" href="favicon.ico">
     </head>
     <body>
         <header>
             <h1>TODO List</h1>
         </header>
-        <section>
+        <div class="container">
             <h2 id="todo-list-placeholder">Loading...</h2>
+            <div class="jumbotron">
+              <form id="todo-form">
+                  <input id="new-todo" placeholder="What needs to be done?" autofocus>
+                  <input id="submit-todo" type="submit" value="Create">
+              </form>
+            </div>
             <ul id="todo-list"></ul>
-            <form id="todo-form">
-                <input id="new-todo" placeholder="What needs to be done?" autofocus>
-                <input id="submit-todo" type="submit" value="Create">
-            </form>
             <div id="error"></div>
-        </section>
+        </div>
         <script type="text/javascript" src="main.js"></script>
     </body>
 </html>

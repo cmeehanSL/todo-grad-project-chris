@@ -79,6 +79,45 @@ module.exports.addTodo = function(text) {
     driver.findElement(webdriver.By.id("submit-todo")).click();
 };
 
+module.exports.getTodoText = function(child) {
+    var inputField;
+    //   driver.wait(until.elementLocated(webdriver.By.css("#todo-list li:nth-child(" +
+    //     child + ") .itemEntry")), 5 * 1000).then(function(elm) {
+    //     inputField = elm;
+    // });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css("#todo-list li:nth-child(" +
+        child + ") .itemEntry"));
+    }, 5000);
+    inputField = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
+      child + ") .itemEntry"));
+
+    return inputField.getAttribute("value");
+};
+
+module.exports.deleteTodo = function(child) {
+    var deleteButton;
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css("#todo-list li:nth-child(" +
+        child + ") .deleteBtn"));
+    }, 5000);
+    deleteButton = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" + child + ") .deleteBtn"));
+    deleteButton.click();
+    // driver.executeScript("arguments[0].checked = true;", deleteButton);
+};
+
+module.exports.editTodo = function(child, text) {
+    var editBtn = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" + child + ") .editBtn"));
+    editBtn.click();
+    var inputField = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
+      child + ") .itemEntry"));
+    inputField.clear();
+    inputField.sendKeys(text);
+    var confirmButton = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
+      child + ") .confirmEditButton"));
+    confirmButton.click();
+};
+
 module.exports.setupErrorRoute = function(action, route) {
     if (action === "get") {
         router.get(route, function(req, res) {

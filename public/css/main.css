@@ -1,12 +1,18 @@
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
+
+
 body {
-    background: #E8F5E9;
+    background: #;
     color: rgba(0, 0, 0, 0.87);
-    font-family: sans-serif;
+    font-family: 'Lato', sans-serif;;
     margin: 0;
 }
 
 header {
-    background-color: #cc00ff;
+    background-color: #4286f4;
+    font-family: 'Inconsolita', monospace;
     padding: 0.5em 1em;
 }
 
@@ -26,9 +32,40 @@ h1 {
 }
 
 #todo-list {
-  width: 800px;
-  background-color: : green;
+  margin-top: 5em;
+  width: 90%;
+}
 
+.btn-primary {
+  margin: 0 0.1em 0 0.1em;
+}
+
+h4 {
+  font-size: 10px;
+}
+
+
+.itemEntry, .itemEntry[disabled] {
+  background-color:rgba(0,0,0, 0);
+  border-style: solid;
+  border: none;
+  outline: none;
+  cursor: default;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.confirmEditButton {
+  visibility: hidden;
+}
+
+input:focus{
+  outline: none;
+}
+
+.itemBtn {
+  opacity: 0.1;
+  transition: opacity 0.5s linear;
 }
 
 
@@ -51,12 +88,39 @@ ul {
   margin: 0px 0px 0px 0px;
 }
 
+li {
+  /*border-style: solid;
+  border-width: 3px;
+  border-color: red;*/
+  height: auto;
+  box-sizing: border-box;
+}
+
 
 .row {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
-  height: 48px;
+  /*height: 15px;*/
+  /*background-color: orange;
+  border-style: none;
+  border-width: medium;
+  border-radius: 5px;
+  border-color: purple;*/
 }
+
+.row:hover .itemBtn{
+  opacity: 1;
+}
+
+.row:hover .itemEntry {
+  border-top: 2px solid #4286f4;
+  border-bottom: 2px solid #4286f4;
+}
+
+.input-group .form-control {
+  border-radius: 0px;
+}
+
 
 .itemCell {
   height: 100%;
