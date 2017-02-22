@@ -80,13 +80,28 @@ module.exports.addTodo = function(text) {
 };
 
 module.exports.getTodoText = function(child) {
-    var inputField = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
+    var inputField;
+    //   driver.wait(until.elementLocated(webdriver.By.css("#todo-list li:nth-child(" +
+    //     child + ") .itemEntry")), 5 * 1000).then(function(elm) {
+    //     inputField = elm;
+    // });
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css("#todo-list li:nth-child(" +
+        child + ") .itemEntry"));
+    }, 5000);
+    inputField = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
       child + ") .itemEntry"));
+
     return inputField.getAttribute("value");
 };
 
 module.exports.deleteTodo = function(child) {
-    var deleteButton = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" + child + ") .deleteBtn"));
+    var deleteButton;
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css("#todo-list li:nth-child(" +
+        child + ") .deleteBtn"));
+    }, 5000);
+    deleteButton = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" + child + ") .deleteBtn"));
     deleteButton.click();
     // driver.executeScript("arguments[0].checked = true;", deleteButton);
 };
