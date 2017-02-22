@@ -64,6 +64,7 @@ function deleteItem(id, callback) {
 function reloadTodoList() {
     var currentText;
     var tempText;
+    var isComplete = false;
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
     }
@@ -71,16 +72,17 @@ function reloadTodoList() {
     getTodoList(function(todos) {
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
+            isComplete = todo.done;
             var listItem = document.createElement("li");
             var row = document.createElement("div");
             row.className = "row";
             listItem.appendChild(row);
 
             var itemCell = document.createElement("div");
-            itemCell.className = "itemCell col-lg-8 col-md-8 col-sm-8 col-xs-8";
+            itemCell.className = "itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7";
 
             var buttonsCell = document.createElement("div");
-            buttonsCell.className = "buttonsCell col-lg-4 col-md-4 col-sm-4 col-xs-4";
+            buttonsCell.className = "buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5";
 
             row.appendChild(itemCell);
             row.appendChild(buttonsCell);
@@ -104,8 +106,27 @@ function reloadTodoList() {
 
             editButton.appendChild(editSpan);
 
+            var doneButton = document.createElement("button");
+            doneButton.setAttribute("type", "button");
+            doneButton.className = "itemBtn doneBtn btn-primary btn-lg";
+            var doneSpan = document.createElement("span");
+            doneSpan.className = "glyphicon glyphicon-ok";
+
+            doneButton.appendChild(doneSpan);
+
+            // var checkBoxContainer = document.createElement("div");
+            // checkBoxContainer.className = "checkbox";
+            // var checkBox = document.createElement("label");
+            // checkBox.className = "completeBox";
+            // checkBox.innerHTML += "<input type='checkbox' value='' checked>";
+            // checkBox.innerHTML += "<span class='cr'><i class='cr-icon fa fa-check'></i></span>";
+            // checkBoxContainer.appendChild(checkBox);
+
             buttonSet.appendChild(editButton);
             buttonSet.appendChild(deleteButton);
+            buttonSet.appendChild(doneButton);
+            // buttonSet.appendChild(checkBoxContainer);
+
             buttonsCell.appendChild(buttonSet);
 
             var inputGroup = document.createElement("div");
@@ -124,6 +145,16 @@ function reloadTodoList() {
             itemCell.appendChild(inputGroup);
             var currentID = todo.id;
             //Add the delete button listener
+            todoList.appendChild(listItem);
+
+            if (!isComplete) {
+                doneButton.className += " btn-outline";
+            }
+            else {
+                itemEntry.className += " completedItem";
+            }
+
+            // LISTENERS will be done in angular eventually
             deleteButton.addEventListener("click", function() {
                 // console.log("deleting item with id " + currentID);
                 deleteItem(currentID, reloadTodoList);
@@ -161,26 +192,30 @@ function reloadTodoList() {
                     confirmEdit(itemEntry, currentID, tempText);
                 }
             });
-            todoList.appendChild(listItem);
+            doneButton.addEventListener("click", function(event) {
+                tempText = itemEntry.value;
+                isComplete = !todo.done;
+                confirmEdit(itemEntry, currentID, tempText, isComplete);
+            });
         });
     });
 }
 
-function confirmEdit(itemEntry, id, tempText) {
+function confirmEdit(itemEntry, id, tempText, isComplete) {
     itemEntry.value = tempText;
     console.log("value changed to " + itemEntry.value);
-    editItem(itemEntry, id, reloadTodoList);
-
-    // TODO:  validate on the client side and then send request
+    editItem(itemEntry, id, reloadTodoList, isComplete);
 }
 
-function editItem(itemEntry, id, callback) {
+function editItem(itemEntry, id, callback, isComplete) {
     console.log("attempting to update with id: " + id);
     var createRequest = new XMLHttpRequest();
     createRequest.open("PUT", "/api/todo/" + id);
     createRequest.setRequestHeader("Content-type", "application/json");
+    // TODO add an isComplete field as well
     createRequest.send(JSON.stringify({
-        title: itemEntry.value
+        title: itemEntry.value,
+        done: isComplete
     }));
     createRequest.onload = function() {
         if (this.status === 200) {

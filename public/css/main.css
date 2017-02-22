@@ -33,7 +33,7 @@ h1 {
 
 #todo-list {
   margin-top: 5em;
-  width: 90%;
+  width: 80%;
 }
 
 .btn-primary {
@@ -63,12 +63,15 @@ input:focus{
   outline: none;
 }
 
-.itemBtn {
+.editBtn, .deleteBtn {
   opacity: 0.1;
   transition: opacity 0.5s linear;
 }
 
-
+.completedItem {
+  opacity: 0.1;
+  text-decoration: line-through;
+}
 
 /*#todo-list li {
   width: 300px;
@@ -99,8 +102,9 @@ li {
 
 .row {
   margin: 0px 0px 0px 0px;
+
   padding: 0px 0px 0px 0px;
-  /*height: 15px;*/
+  /*height: 2.5em;*/
   /*background-color: orange;
   border-style: none;
   border-width: medium;
@@ -131,7 +135,7 @@ li {
 
 
 #todo-list li {
-  height: 48px;
+  /*height: 48px;*/
   margin: 0 0 0 0;
   padding: 0 0 0 0;
 }
@@ -143,12 +147,91 @@ h3 {
   /*line-height: 200px;*/
 }
 
+.doneBtn {
+  margin-left: 2em;
+}
+
+.completeBox {
+  font-size: 2.6em;
+}
+
 
 .buttonsCell {
   height: 100%;
   line-height: 100%;
   margin:auto;
 }
+
+
+
+
+.checkbox {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+.checkbox label:after,
+.radio label:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.checkbox .cr,
+.radio .cr {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+    width: 1.3em;
+    height: 1.3em;
+    float: left;
+    margin-right: .5em;
+}
+
+.radio .cr {
+    border-radius: 50%;
+}
+
+.checkbox .cr .cr-icon,
+.radio .cr .cr-icon {
+    position: absolute;
+    font-size: .8em;
+    line-height: 0;
+    top: 50%;
+    left: 20%;
+}
+
+.radio .cr .cr-icon {
+    margin-left: 0.04em;
+}
+
+.checkbox label input[type="checkbox"],
+.radio label input[type="radio"] {
+    display: none;
+}
+
+.checkbox label input[type="checkbox"] + .cr > .cr-icon,
+.radio label input[type="radio"] + .cr > .cr-icon {
+    transform: scale(3) rotateZ(-20deg);
+    opacity: 0;
+    transition: all .3s ease-in;
+}
+
+.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
+.radio label input[type="radio"]:checked + .cr > .cr-icon {
+    transform: scale(1) rotateZ(0deg);
+    opacity: 1;
+}
+
+.checkbox label input[type="checkbox"]:disabled + .cr,
+.radio label input[type="radio"]:disabled + .cr {
+    opacity: .5;
+}
+
+
+
 
 
 /*Bootstrap button outline override*/
