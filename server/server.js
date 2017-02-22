@@ -18,6 +18,7 @@ module.exports = function(port, middleware, callback) {
     app.post("/api/todo", function(req, res) {
         var todo = req.body;
         todo.id = latestId.toString();
+        todo.done = false;
         latestId++;
         todos.push(todo);
         res.set("Location", "/api/todo/" + todo.id);
@@ -33,6 +34,7 @@ module.exports = function(port, middleware, callback) {
         todos = todos.map(function (currentTodo) {
             if (currentTodo.id === id) {
                 currentTodo.title = updatedTodo.title;
+                currentTodo.done = updatedTodo.done;
                 edited = true;
             }
             return currentTodo;

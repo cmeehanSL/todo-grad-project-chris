@@ -170,4 +170,58 @@ describe("server", function() {
           });
         });
     });
+    describe("complete a todo", function() {
+        it("responds with status code 404 if there is no such item", function(done) {
+            request.put(todoListUrl + "/0", function(error, response) {
+                assert.equal(response.statusCode, 404);
+                done();
+            });
+        });
+        it("responds with status code 200", function(done) {
+            request.post({
+              url: todoListUrl,
+              json: {
+                  title: "This is a TODO item",
+                  done: false
+              }
+          }, function() {
+              request.put({
+                  url: todoListUrl + "/0",
+                  json: {
+                      title: "This is a TODO item",
+                      done: true
+                  }
+              }, function(error, response) {
+                  assert.equal(response.statusCode, 200);
+                  done();
+              });
+          });
+        });
+        it("has completed the item", function(done) {
+            request.post({
+              url: todoListUrl,
+              json: {
+                  title: "This is a TODO item",
+                  done: false
+              }
+          }, function() {
+              request.put({
+                  url: todoListUrl + "/0",
+                  json: {
+                      title: "This is a TODO item",
+                      done: true
+                  }
+              }, function() {
+                  request.get(todoListUrl, function(error, response, body) {
+                      assert.deepEqual(JSON.parse(body), [{
+                          title: "This is a TODO item",
+                          id: "0",
+                          done: true
+                      }]);
+                      done();
+                  });
+              });
+          });
+        });
+    });
 });
