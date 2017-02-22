@@ -16,6 +16,11 @@ header {
     padding: 0.5em 1em;
 }
 
+#count-label {
+  font-family: 'Inconsolita', monospace;
+  font-size: 20px;
+}
+
 section,
 h1 {
     max-width: 1170px;

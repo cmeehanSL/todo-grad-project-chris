@@ -3,6 +3,7 @@ var todoListPlaceholder = document.getElementById("todo-list-placeholder");
 var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
+var countLabel = document.getElementById("count-label");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -65,6 +66,7 @@ function reloadTodoList() {
     var currentText;
     var tempText;
     var isComplete = false;
+    var numRemaining = 0;
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
     }
@@ -147,8 +149,9 @@ function reloadTodoList() {
             //Add the delete button listener
             todoList.appendChild(listItem);
 
-            if (!isComplete) {
+            if (!todo.done) {
                 doneButton.className += " btn-outline";
+                numRemaining++;
             }
             else {
                 itemEntry.className += " completedItem";
@@ -198,7 +201,9 @@ function reloadTodoList() {
                 confirmEdit(itemEntry, currentID, tempText, isComplete);
             });
         });
+        countLabel.textContent = "Number of Items remaining: " + numRemaining;
     });
+
 }
 
 function confirmEdit(itemEntry, id, tempText, isComplete) {
