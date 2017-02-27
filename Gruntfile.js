@@ -3,7 +3,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-jscs");
     grunt.loadNpmTasks("grunt-mocha-test");
     grunt.loadNpmTasks("grunt-mocha-istanbul");
-    grunt.loadNpmTasks("grunt-keepalive");
     grunt.loadNpmTasks("grunt-express-server");
     grunt.loadNpmTasks("grunt-contrib-watch");
 
@@ -21,6 +20,7 @@ module.exports = function(grunt) {
                     spawn: false
                 }
             }
+
         },
         express: {
             options: {
