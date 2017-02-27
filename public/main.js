@@ -17,6 +17,7 @@ var pollInterval = 20000;
 var currentTimerID = 0;
 
 form.onsubmit = function(event) {
+    console.log("submitted");
     var title = todoTitle.value;
     createTodo(title, function() {
         reloadTodoList();
@@ -392,7 +393,7 @@ function editItem(itemEntry, id, callback, isComplete) {
 function refreshBar() {
     var progressBar = progress.getElementsByClassName("progress-bar")[0];
     var percentage = Math.floor(100 * globalNumComplete / (globalNumRemaining + globalNumComplete));
-    if (globalNumRemaining === 0) {
+    if (globalNumRemaining === 0 && globalNumComplete === 0) {
         percentage = 0;
     }
 
