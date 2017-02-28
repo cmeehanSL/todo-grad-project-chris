@@ -196,157 +196,157 @@ function reloadTodoList() {
     var isComplete = false;
     var numRemaining = 0;
     var numComplete = 0;
-    while (todoList.firstChild) {
-        todoList.removeChild(todoList.firstChild);
-    }
+    // while (todoList.firstChild) {
+    //     todoList.removeChild(todoList.firstChild);
+    // }
     todoListPlaceholder.style.display = "block";
     document.getElementById("removeCompleted").style.visibility = "hidden";
-    getTodoList(function(todos) {
-        todoListPlaceholder.style.display = "none";
-        todos.forEach(function(todo) {
-            if (!todo.done) {
-                numRemaining++;
-            }
-            else {
-                numComplete++;
-            }
-            if (!displayActive && todo.done === false) {
-                return;
-            }
-            if (!displayComplete && todo.done) {
-                return;
-            }
-            isComplete = todo.done;
-            var listItem = document.createElement("li");
-            var row = document.createElement("div");
-            row.className = "row";
-            listItem.appendChild(row);
-
-            var itemCell = document.createElement("div");
-            itemCell.className = "itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7";
-
-            var buttonsCell = document.createElement("div");
-            buttonsCell.className = "buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5";
-
-            row.appendChild(itemCell);
-            row.appendChild(buttonsCell);
-            var buttonSet = document.createElement("div");
-            buttonSet.className = "btn-group btn-group-lg";
-            buttonSet.setAttribute("role", "group");
-            var deleteButton = document.createElement("button");
-
-            var trashSpan = document.createElement("span");
-            trashSpan.className = "glyphicon glyphicon-remove-circle";
-
-            deleteButton.appendChild(trashSpan);
-            deleteButton.setAttribute("type", "button");
-            deleteButton.className = "itemBtn deleteBtn btn-primary btn-outline btn-lg";
-
-            var editButton = document.createElement("button");
-            deleteButton.setAttribute("type", "button");
-            editButton.className = "itemBtn editBtn btn-primary btn-outline btn-lg";
-            var editSpan = document.createElement("span");
-            editSpan.className = "glyphicon glyphicon-pencil";
-
-            editButton.appendChild(editSpan);
-
-            var doneButton = document.createElement("button");
-            doneButton.setAttribute("type", "button");
-            doneButton.className = "itemBtn doneBtn btn-primary btn-lg";
-            var doneSpan = document.createElement("span");
-            doneSpan.className = "glyphicon glyphicon-ok";
-
-            doneButton.appendChild(doneSpan);
-
-            buttonSet.appendChild(editButton);
-            buttonSet.appendChild(deleteButton);
-            buttonSet.appendChild(doneButton);
-
-            buttonsCell.appendChild(buttonSet);
-
-            var inputGroup = document.createElement("div");
-            inputGroup.className = "input-group input-group-lg";
-
-            var intemEntry = document.createElement("input");
-            inputGroup.innerHTML = "<input type='text' class='form-control itemEntry'" +
-              "disabled='disabled'>";
-            var itemEntry = inputGroup.firstChild;
-            itemEntry.setAttribute("value", todo.title);
-            var confirmEditButton = document.createElement("span");
-            confirmEditButton.className = "input-group-btn";
-            confirmEditButton.innerHTML = "<button class='btn btn-default confirmEditButton'>Confirm</button>";
-
-            inputGroup.appendChild(confirmEditButton);
-
-            itemCell.appendChild(inputGroup);
-            var currentID = todo.id;
-            //Add the delete button listener
-            todoList.appendChild(listItem);
-
-            if (!todo.done) {
-                doneButton.className += " btn-outline";
-            }
-            else {
-                itemEntry.className += " completedItem";
-            }
-
-            // LISTENERS will be done in angular eventually
-            deleteButton.addEventListener("click", function() {
-                // console.log("deleting item with id " + currentID);
-                deleteItem(currentID, reloadTodoList);
-            });
-            editButton.addEventListener("click", function() {
-                confirmEditButton.firstChild.style.visibility = "visible";
-                itemEntry.disabled = false;
-                itemEntry.selectionStart = itemEntry.selectionEnd = itemEntry.value.length;
-                itemEntry.focus();
-                currentText = itemEntry.value;
-            });
-
-            itemEntry.addEventListener("blur", function() {
-                itemEntry.disabled = true;
-                confirmEditButton.firstChild.style.visibility = "hidden";
-                itemEntry.value = currentText;
-            });
-            confirmEditButton.firstChild.addEventListener("mousedown", function(event) {
-                event.preventDefault();
-                this.addEventListener("click", function() {
-                    tempText = itemEntry.value;
-                    confirmEdit(itemEntry, currentID, tempText);
-                    currentText = itemEntry.value;
-                    itemEntry.blur();
-                });
-
-            });
-            itemEntry.addEventListener("keyup", function(event) {
-                event.preventDefault();
-                tempText = itemEntry.value;
-                if (event.keyCode === 13) {
-                    itemEntry.blur();
-                    confirmEdit(itemEntry, currentID, tempText);
-                }
-            });
-            doneButton.addEventListener("click", function(event) {
-                tempText = itemEntry.value;
-                isComplete = !todo.done;
-                confirmEdit(itemEntry, currentID, tempText, isComplete);
-            });
-        });
-        countLabel.textContent = "Number of Items remaining: " + numRemaining;
-        if (numComplete > 0) {
-            document.getElementById("removeCompleted").style.visibility = "visible";
-        }
-        allTab.getElementsByClassName("badge")[0].textContent = numRemaining + numComplete;
-        remainingTab.getElementsByClassName("badge")[0].textContent = numRemaining;
-        completeTab.getElementsByClassName("badge")[0].textContent = numComplete;
-
-        globalNumComplete = numComplete;
-        globalNumRemaining = numRemaining;
-        if (displayActive && displayComplete) {
-            refreshBar();
-        }
-        setPollTimer();
-    });
+    // getTodoList(function(todos) {
+    //     todoListPlaceholder.style.display = "none";
+    //     todos.forEach(function(todo) {
+    //         if (!todo.done) {
+    //             numRemaining++;
+    //         }
+    //         else {
+    //             numComplete++;
+    //         }
+    //         if (!displayActive && todo.done === false) {
+    //             return;
+    //         }
+    //         if (!displayComplete && todo.done) {
+    //             return;
+    //         }
+    //         isComplete = todo.done;
+    //         var listItem = document.createElement("li");
+    //         var row = document.createElement("div");
+    //         row.className = "row";
+    //         listItem.appendChild(row);
+    //
+    //         var itemCell = document.createElement("div");
+    //         itemCell.className = "itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7";
+    //
+    //         var buttonsCell = document.createElement("div");
+    //         buttonsCell.className = "buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5";
+    //
+    //         row.appendChild(itemCell);
+    //         row.appendChild(buttonsCell);
+    //         var buttonSet = document.createElement("div");
+    //         buttonSet.className = "btn-group btn-group-lg";
+    //         buttonSet.setAttribute("role", "group");
+    //         var deleteButton = document.createElement("button");
+    //
+    //         var trashSpan = document.createElement("span");
+    //         trashSpan.className = "glyphicon glyphicon-remove-circle";
+    //
+    //         deleteButton.appendChild(trashSpan);
+    //         deleteButton.setAttribute("type", "button");
+    //         deleteButton.className = "itemBtn deleteBtn btn-primary btn-outline btn-lg";
+    //
+    //         var editButton = document.createElement("button");
+    //         deleteButton.setAttribute("type", "button");
+    //         editButton.className = "itemBtn editBtn btn-primary btn-outline btn-lg";
+    //         var editSpan = document.createElement("span");
+    //         editSpan.className = "glyphicon glyphicon-pencil";
+    //
+    //         editButton.appendChild(editSpan);
+    //
+    //         var doneButton = document.createElement("button");
+    //         doneButton.setAttribute("type", "button");
+    //         doneButton.className = "itemBtn doneBtn btn-primary btn-lg";
+    //         var doneSpan = document.createElement("span");
+    //         doneSpan.className = "glyphicon glyphicon-ok";
+    //
+    //         doneButton.appendChild(doneSpan);
+    //
+    //         buttonSet.appendChild(editButton);
+    //         buttonSet.appendChild(deleteButton);
+    //         buttonSet.appendChild(doneButton);
+    //
+    //         buttonsCell.appendChild(buttonSet);
+    //
+    //         var inputGroup = document.createElement("div");
+    //         inputGroup.className = "input-group input-group-lg";
+    //
+    //         var intemEntry = document.createElement("input");
+    //         inputGroup.innerHTML = "<input type='text' class='form-control itemEntry'" +
+    //           "disabled='disabled'>";
+    //         var itemEntry = inputGroup.firstChild;
+    //         itemEntry.setAttribute("value", todo.title);
+    //         var confirmEditButton = document.createElement("span");
+    //         confirmEditButton.className = "input-group-btn";
+    //         confirmEditButton.innerHTML = "<button class='btn btn-default confirmEditButton'>Confirm</button>";
+    //
+    //         inputGroup.appendChild(confirmEditButton);
+    //
+    //         itemCell.appendChild(inputGroup);
+    //         var currentID = todo.id;
+    //         //Add the delete button listener
+    //         todoList.appendChild(listItem);
+    //
+    //         if (!todo.done) {
+    //             doneButton.className += " btn-outline";
+    //         }
+    //         else {
+    //             itemEntry.className += " completedItem";
+    //         }
+    //
+    //         // LISTENERS will be done in angular eventually
+    //         deleteButton.addEventListener("click", function() {
+    //             // console.log("deleting item with id " + currentID);
+    //             deleteItem(currentID, reloadTodoList);
+    //         });
+    //         editButton.addEventListener("click", function() {
+    //             confirmEditButton.firstChild.style.visibility = "visible";
+    //             itemEntry.disabled = false;
+    //             itemEntry.selectionStart = itemEntry.selectionEnd = itemEntry.value.length;
+    //             itemEntry.focus();
+    //             currentText = itemEntry.value;
+    //         });
+    //
+    //         itemEntry.addEventListener("blur", function() {
+    //             itemEntry.disabled = true;
+    //             confirmEditButton.firstChild.style.visibility = "hidden";
+    //             itemEntry.value = currentText;
+    //         });
+    //         confirmEditButton.firstChild.addEventListener("mousedown", function(event) {
+    //             event.preventDefault();
+    //             this.addEventListener("click", function() {
+    //                 tempText = itemEntry.value;
+    //                 confirmEdit(itemEntry, currentID, tempText);
+    //                 currentText = itemEntry.value;
+    //                 itemEntry.blur();
+    //             });
+    //
+    //         });
+    //         itemEntry.addEventListener("keyup", function(event) {
+    //             event.preventDefault();
+    //             tempText = itemEntry.value;
+    //             if (event.keyCode === 13) {
+    //                 itemEntry.blur();
+    //                 confirmEdit(itemEntry, currentID, tempText);
+    //             }
+    //         });
+    //         doneButton.addEventListener("click", function(event) {
+    //             tempText = itemEntry.value;
+    //             isComplete = !todo.done;
+    //             confirmEdit(itemEntry, currentID, tempText, isComplete);
+    //         });
+    //     });
+    //     // countLabel.textContent = "Number of Items remaining: " + numRemaining;
+    //     if (numComplete > 0) {
+    //         document.getElementById("removeCompleted").style.visibility = "visible";
+    //     }
+    //     // allTab.getElementsByClassName("badge")[0].textContent = numRemaining + numComplete;
+    //     // remainingTab.getElementsByClassName("badge")[0].textContent = numRemaining;
+    //     // completeTab.getElementsByClassName("badge")[0].textContent = numComplete;
+    //
+    //     globalNumComplete = numComplete;
+    //     globalNumRemaining = numRemaining;
+    //     if (displayActive && displayComplete) {
+    //         refreshBar();
+    //     }
+    //     setPollTimer();
+    // });
 }
 
 function clearList() {

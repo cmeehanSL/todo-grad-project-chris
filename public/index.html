@@ -18,16 +18,16 @@
             <div class="jumbotron">
 
               <div ng-controller="ctrl0">
-                <div id="count-label">Number of Items Remaining: {{total}}</div>
-              </div>
-              <!-- PUT A BOOTSTRAP PROGRESS BAR -->
+                <div id="count-label">Number of Items Remaining: {{stats.numLeft}}</div>
+                <button ng-click="refreshList()">Refresh List</button>
+                <span id="removeCompleted"><button type="button" id="removeBtn" class="btn btn-lg btn-danger btn-outline"><span class="glyphicon glyphicon-trash"></span> Remove Completed</button></span>
+                <ul class="nav nav-pills" role="tablist">
+                  <li role="presentation" id="allTab" class="active"><a href="#">All<span ng-bind="stats.total" class="badge"></span></a></li>
+                  <li role="presentation" id="remainingTab"><a href="#">Active<span ng-bind="stats.numLeft" class="badge pull-right"></span></a></li>
+                  <li role="presentation" id="completeTab"><a href="#">Complete<span ng-bind="stats.numComplete" class="badge pull-right"></span></a></li>
+                </ul>
 
-              <span id="removeCompleted"><button type="button" id="removeBtn" class="btn btn-lg btn-danger btn-outline"><span class="glyphicon glyphicon-trash"></span> Remove Completed</button></span>
-              <ul class="nav nav-pills" role="tablist">
-                  <li role="presentation" id="allTab" class="active"><a href="#">All<span class="badge"></span></a></li>
-                  <li role="presentation" id="remainingTab"><a href="#">Active<span class="badge pull-right"></span></a></li>
-                  <li role="presentation" id="completeTab"><a href="#">Complete<span class="badge pull-right"></span></a></li>
-              </ul>
+            </div>
               <form id="todo-form">
                   <div id="create-item" class="input-group">
                       <input type="text" id=new-todo class="form-control" placeholder="New Item">
@@ -42,25 +42,53 @@
                   0%
                 </div>
             </div>
-            <div ng-controller="ctrl1">
-              <!-- <span> Values: </span>
+            <div ng-controller="listView">
+              <span> Values: </span>
               <input type="text" ng-model="first" />
               <input type="text" ng-model="second" />
               <button ng-click="updateValue()">Sum</button>
               <br><br>
               {{calculation}}
 
+              <p> Total list length is {{todos.length}} </p>
+
               <p> your first value is {{first}} </p>
               <p> your second value is
                 <span data-ng-bind="second"></span>
-              </p> -->
+              </p>
 
-              <ul id="todo-list"></ul>
+              <ul id="todo-list">
+                  <li ng-repeat="todo in todos">
+                      <div class="row">
+                          <div class="itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                              <div class="input-group input-group-lg">
+                                  <input value="test val" type='text' class='form-control itemEntry' disabled='disabled'>
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-default confirmEditButton">Confirm</button>
+                                  </span>
+                              </div>
+                          </div>
+                          <div class="buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                              <div role="group" class="btn-group btn-lg">
+                                  <button type="button" class="itemBtn btn-primary btn-outline btn-lg">
+                                      <span class="glyphicon glyphicon-pencil"></span>
+                                  </button>
+                                  <button ng-click="deleteItem(todo)" type="button" class="itemBtn btn-primary btn-outline btn-lg">
+                                      <span class="glyphicon glyphicon-remove-circle"></span>
+                                  </button>
+                                  <button type="button" class="tick itemBtn btn-primary btn-outline btn-lg">
+                                      <span class="glyphicon glyphicon-ok"></span>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </li>
+              </ul>
               <div id="error"></div>
             </div>
         </div>
     </body>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
-    <!-- <script type="text/javascript" src="app.js"></script> -->
+    <script type="text/javascript" src="app.js"></script>
 </html>
