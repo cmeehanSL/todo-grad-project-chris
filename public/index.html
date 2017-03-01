@@ -14,79 +14,65 @@
             <h1>TODO List</h1>
         </header>
         <div class="container">
-            <h2 id="todo-list-placeholder">Loading...</h2>
+          <div ng-controller="creator">
+            <h2 ng-show="!loaded" id="todo-list-placeholder">Loading...</h2>
             <div class="jumbotron">
-
-              <div ng-controller="ctrl0">
-                <div id="count-label">Number of Items Remaining: {{stats.numLeft}}</div>
-                <button ng-click="refreshList()">Refresh List</button>
-                <span id="removeCompleted"><button type="button" id="removeBtn" class="btn btn-lg btn-danger btn-outline"><span class="glyphicon glyphicon-trash"></span> Remove Completed</button></span>
-                <ul class="nav nav-pills" role="tablist">
-                  <li role="presentation" id="allTab" class="active"><a href="#">All<span ng-bind="stats.total" class="badge"></span></a></li>
-                  <li role="presentation" id="remainingTab"><a href="#">Active<span ng-bind="stats.numLeft" class="badge pull-right"></span></a></li>
-                  <li role="presentation" id="completeTab"><a href="#">Complete<span ng-bind="stats.numComplete" class="badge pull-right"></span></a></li>
-                </ul>
-
-            </div>
-              <form id="todo-form">
-                  <div id="create-item" class="input-group">
-                      <input type="text" id=new-todo class="form-control" placeholder="New Item">
-                      <span class="input-group-btn">
-                        <button class="btn btn-default" id="submit-todo" type="submit">Create</button>
-                      </span>
-                  </div>
-              </form>
-            </div>
-            <div id="progress" class="progress">
-                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                  0%
-                </div>
-            </div>
-            <div ng-controller="listView">
-              <span> Values: </span>
-              <input type="text" ng-model="first" />
-              <input type="text" ng-model="second" />
-              <button ng-click="updateValue()">Sum</button>
-              <br><br>
-              {{calculation}}
-
-              <p> Total list length is {{todos.length}} </p>
-
-              <p> your first value is {{first}} </p>
-              <p> your second value is
-                <span data-ng-bind="second"></span>
-              </p>
-
-              <ul id="todo-list">
-                  <li ng-repeat="todo in todos">
-                      <div class="row">
-                          <div class="itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                              <div class="input-group input-group-lg">
-                                  <input value="test val" type='text' class='form-control itemEntry' disabled='disabled'>
-                                  <span class="input-group-btn">
-                                    <button class="btn btn-default confirmEditButton">Confirm</button>
-                                  </span>
-                              </div>
-                          </div>
-                          <div class="buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                              <div role="group" class="btn-group btn-lg">
-                                  <button type="button" class="itemBtn btn-primary btn-outline btn-lg">
-                                      <span class="glyphicon glyphicon-pencil"></span>
-                                  </button>
-                                  <button ng-click="deleteItem(todo)" type="button" class="itemBtn btn-primary btn-outline btn-lg">
-                                      <span class="glyphicon glyphicon-remove-circle"></span>
-                                  </button>
-                                  <button type="button" class="tick itemBtn btn-primary btn-outline btn-lg">
-                                      <span class="glyphicon glyphicon-ok"></span>
-                                  </button>
-                              </div>
-                          </div>
+                  <div id="count-label">Number of Items Remaining: {{stats.numLeft}}</div>
+                  <button ng-click="refreshList()">Refresh List</button>
+                  <span id="removeCompleted"><button type="button" id="removeBtn" class="btn btn-lg btn-danger btn-outline"><span class="glyphicon glyphicon-trash"></span> Remove Completed</button></span>
+                  <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation" id="allTab" ng-class="{active: all}"><a ng-click="selectTab(0)" href="#">All<span ng-bind="stats.total" class="badge"></span></a></li>
+                    <li role="presentation" id="remainingTab" ng-class="{active: active}"><a ng-click="selectTab(1)" href="#">Active<span ng-bind="stats.numLeft" class="badge pull-right"></span></a></li>
+                    <li role="presentation" id="completeTab" ng-class="{active: complete}"><a ng-click="selectTab(2)" href="#">Complete<span ng-bind="stats.numComplete" class="badge pull-right"></span></a></li>
+                  </ul>
+                  <form ng-submit="createItem()" id="todo-form">
+                      <div id="create-item" class="input-group">
+                          <input ng-model="newTitle" type="text" id=new-todo class="form-control" placeholder="New Item">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" id="submit-todo" type="submit">Create</button>
+                          </span>
                       </div>
-                  </li>
-              </ul>
-              <div id="error"></div>
-            </div>
-        </div>
+                  </form>
+              </div>
+          </div>
+          <div id="progress" class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                0%
+              </div>
+          </div>
+          <div ng-controller="listView as $ctrl">
+            <ul id="todo-list">
+                <li ng-repeat="todo in todos">
+                    <div class="row">
+                        <div class="itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                          <form ng-submit="modifyItem(this)">
+                            <div class="input-group input-group-lg">
+                                <input ng-model="moddedTitle" ng-blur="removeEditable(this)" ng-class="{completedItem: todo.done}" ng-value=todo.title type='text' class='form-control itemEntry' disabled="disabled">
+                                <span class="input-group-btn">
+                                  <button ng-mousedown="fireClick($event)" type="submit" class="btn btn-default confirmEditButton" ng-show="editable">Confirm</button>
+                                </span>
+                            </div>
+                          </form>
+                        </div>
+                        <div class="buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <div role="group" class="btn-group btn-lg">
+                                <button ng-click="changeEditable(this)" type="button" class="itemBtn btn-primary btn-outline btn-lg">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </button>
+                                <button ng-click="deleteItem(todo)" type="button" class="itemBtn btn-primary btn-outline btn-lg">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                                <button ng-click="completeItem(todo)" type="button" ng-class="[ {true: 'tick itemBtn btn-primary btn-lg'}[true], {false: 'btn-outline'}[todo.done]]">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div id="error"></div>
+          </div>
+      </div>
     </body>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
     <script type="text/javascript" src="main.js"></script>

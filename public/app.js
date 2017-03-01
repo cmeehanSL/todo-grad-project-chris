@@ -24,6 +24,27 @@ app1.service("todoService", function($http) {
       numLeft: 0,
       numComplete: 0
     };
+
+    var all = true;
+    var active = false;
+    var complete = false;
+
+    function selectTab(option) {
+        all = active = complete = false;
+        if (option == 0) {
+            all = true;
+        }
+        else if (option == 1) {
+            active = true;
+        }
+        else if (option == 2) {
+            complete = true;
+        }
+        else {
+            all = true;
+        }
+        reloadList();
+    }
     // fetchTodos();
 
     var promise = $http({
@@ -55,28 +76,45 @@ app1.service("todoService", function($http) {
     //     getTodos: getTodos
     // };
 
-    function deleteItem(id) {
+    function createItem(title) {
         $http({
-            method: "DELETE",
-            url: "/api/todo/" + id;
+            method: "POST",
+            url: "/api/todo",
+            headers: {
+                "Content-type": "application/json"
+            },
+            data: {
+                title: title
+            }
         })
         .then(status)
-        .then(data, function failure(response) {
+        .then(function() {
+            reloadList();
+        }, function failure(reponse) {
             console.log("failed here");
-            error.textContent = "Failed to get list. Server returned " +
-              response.status + " - " + response.statusText;
+            error.textContent = "Failed to delete item. Server returned " +
+              response.status + " - " + response.statusText
         })
-        .then(function(data) {
-            console.log("fetched todo list and now going to update it");
-            // this.todos = data;
-            this.todos.length = 0;
-            data.forEach(function(todo) {
-                this.todos.push(todo);
-            })
-            console.log("the todos been updated and are now " + this.todos);
-            console.log("and the length is " + this.todos.length)
-            calculateStats();
-            return data;
+        .catch(function(newError) {
+            console.log("Request failed " + newError);
+        });
+    }
+
+
+    function deleteItem(todo, reload) {
+        $http({
+            method: "DELETE",
+            url: "/api/todo/" + todo.id
+        })
+        .then(status)
+        .then(function() {
+          if (reload) {
+              reloadList();
+          }
+        }, function failure(response) {
+            console.log("failed here");
+            error.textContent = "Failed to delete item. Server returned " +
+              response.status + " - " + response.statusText;
         })
         .catch(function(newError) {
             console.log("Request failed " + newError);
@@ -84,10 +122,39 @@ app1.service("todoService", function($http) {
 
     }
 
+    function modifyItem(todo) {
+      $http({
+          method: "PUT",
+          url: "/api/todo/" + todo.id,
+          headers: {
+            "Content-type": "application/json"
+          },
+          data: todo
+      })
+      .then(status)
+      .then(function() {
+          reloadList();
+      }, function failure(response) {
+          console.log("failed here");
+          error.textContent = "Failed to edit item. Server returned " +
+            response.status + " - " + response.statusText;
+      })
+      .catch(function(newError) {
+          console.log("Request failed " + newError);
+      });
+
+    }
+
+    // NOTE: may not actually need to return reloadList
+
     return {
         start: promise,
-        reload: reload,
-        getStats: getStats
+        reloadList: reloadList,
+        getStats: getStats,
+        deleteItem: deleteItem,
+        modifyItem: modifyItem,
+        createItem: createItem,
+        selectTab: selectTab
     }
 
     function getStats() {
@@ -110,7 +177,7 @@ app1.service("todoService", function($http) {
         stats.numComplete = stats.total - stats.numLeft;
     }
 
-    function reload() {
+    function reloadList() {
         $http({
             method: "GET",
             url: "/api/todo"
@@ -126,7 +193,15 @@ app1.service("todoService", function($http) {
             // this.todos = data;
             this.todos.length = 0;
             data.forEach(function(todo) {
-                this.todos.push(todo);
+                if(active && !todo.done) {
+                    this.todos.push(todo);
+                }
+                else if (complete && todo.done) {
+                    this.todos.push(todo);
+                }
+                else if(all) {
+                    this.todos.push(todo);
+                }
             })
             console.log("the todos been updated and are now " + this.todos);
             console.log("and the length is " + this.todos.length)
@@ -149,32 +224,9 @@ app1.service("todoService", function($http) {
     }
 
 
-    // function fetchTodos() {
-    //     console.log("starting angular http fetch");
-    //     $http({
-    //         method: "GET",
-    //         url: "/api/todo"
-    //     })
-    //     .then(status)
-    //     .then(data, function failure(response) {
-    //         console.log("failed here");
-    //         error.textContent = "Failed to get list. Server returned " +
-    //           response.status + " - " + response.statusText;
-    //     })
-    //     .then(function(data) {
-    //         console.log("fetched todo list");
-    //         this.todos = data;
-    //         console.log("the todos fetched are " + data);
-    //         console.log("and the length is " + this.todos.length)
-    //     })
-    //     .catch(function(newError) {
-    //         console.log("Request failed " + newError);
-    //     });
-    // };
-
     function status(response) {
         console.log("response is " + response.status);
-        if (response.status == 200) {
+        if (response.status >= 200 && response.status < 300) {
             console.log("returning resolved promise");
             return Promise.resolve(response);
         }
@@ -192,9 +244,16 @@ app1.service("todoService", function($http) {
 
 });
 
-app1.controller("ctrl0", ["$scope", "todoService", function($scope, todoService) {
+app1.controller("creator", ["$scope", "todoService", function($scope, todoService) {
+
+    $scope.loaded = false;
+
+    $scope.selectTab = function(option) {
+        todoService.selectTab(option);
+    }
 
     todoService.start.then(function(data) {
+        $scope.loaded = true;
         console.log("first controller received data");
         $scope.todos = data;
         $scope.stats = todoService.getStats();
@@ -202,9 +261,16 @@ app1.controller("ctrl0", ["$scope", "todoService", function($scope, todoService)
     });
     // $scope.todos = todoService.getTodos();
     console.log("todos in the controller are " + $scope.todos);
+    $scope.newTitle = "";
 
     $scope.refreshList = function() {
-        todoService.reload();
+        todoService.reloadList();
+    }
+    $scope.createItem = function() {
+        // NOTE: prevent default here with event object if form validation fails
+        console.log("submitted with angular");
+        todoService.createItem($scope.newTitle);
+        $scope.newTitle = "";
     }
     // $scope.addFake = function() {
     //     $scope.todos.push({fake: "yep"});
@@ -218,17 +284,43 @@ app1.controller("listView", function($scope, todoService) {
         console.log("list view controllier list length is " + $scope.todos.length);
     })
 
-    $scope.deleteItem(todo) {
-        var id = todo.id;
-        todoService.deleteItem(id);
+    $scope.deleteItem = function(todo) {
+        todoService.deleteItem(todo, true);
     }
 
-    $scope.first = 1;
-    $scope.second = 1;
+    // $scope.moddedTitle = "";
+
+    $scope.editable = false;
+
+    $scope.modifyItem = function(repeatScope) {
+        console.log("modifying");
+        console.log("new scope title is " + repeatScope.moddedTitle);
+        repeatScope.todo.title = repeatScope.moddedTitle;
+        todoService.modifyItem(repeatScope.todo);
+    }
+
+    $scope.changeEditable = function(repeatScope) {
+        repeatScope.editable = true;
+        console.log(repeatScope.$index);
+        var editableItem = document.getElementsByClassName('itemEntry')[repeatScope.$index];
+        editableItem.disabled = false;
+        editableItem.focus();
+    }
+
+    $scope.fireClick = function($event) {
+        $event.preventDefault();
+    }
+
+    $scope.removeEditable = function(repeatScope) {
+        console.log("disabling");
+        repeatScope.editable = false;
+        var editableItem = document.getElementsByClassName('itemEntry')[repeatScope.$index];
+        editableItem.disabled = true;
+    }
 
 
-    $scope.updateValue = function() {
-        $scope.calculation = $scope.first + " + " + $scope.second +
-        " = " + ($scope.first + $scope.second);
-    };
+    $scope.completeItem = function(todo) {
+        todo.done = !todo.done;
+        todoService.modifyItem(todo);
+    }
 });

@@ -16,15 +16,15 @@ var globalNumComplete = 0;
 var pollInterval = 20000;
 var currentTimerID = 0;
 
-form.onsubmit = function(event) {
-    console.log("submitted");
-    var title = todoTitle.value;
-    createTodo(title, function() {
-        reloadTodoList();
-    });
-    todoTitle.value = "";
-    event.preventDefault();
-};
+// form.onsubmit = function(event) {
+//     console.log("submitted");
+//     var title = todoTitle.value;
+//     createTodo(title, function() {
+//         reloadTodoList();
+//     });
+//     todoTitle.value = "";
+//     event.preventDefault();
+// };
 //
 removeButton.addEventListener("click", function() {
     clearList();
@@ -91,7 +91,7 @@ function createTodo(title, callback) {
     fetch("/api/todo", {
         method: "POST",
         headers: {
-            "Content-type": "application/json",
+            "Content-type": "application/json"
         },
         body: JSON.stringify({
             title: title

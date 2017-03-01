@@ -68,9 +68,9 @@ h4 {
   box-shadow: none;
 }
 
-.confirmEditButton {
+/*.confirmEditButton {
   visibility: hidden;
-}
+}*/
 
 input:focus{
   outline: none;
