@@ -82,7 +82,7 @@ input:focus{
 }
 
 .completedItem {
-  opacity: 0.1;
+  font-weight: lighter;
   text-decoration: line-through;
 }
 
@@ -162,8 +162,21 @@ h3 {
 
 
 #removeCompleted {
+  /*visibility: hidden;*/
+  transition:
+
+}
+
+.hidRemoveButton {
+  opacity: 0;
   visibility: hidden;
 }
+
+.visRemoveButton {
+  opacity: 1;
+  visibility: visible;
+}
+
 
 
 .doneBtn {

@@ -8,7 +8,6 @@ var removeButton = document.getElementById("removeBtn");
 var allTab = document.getElementById("allTab");
 var remainingTab = document.getElementById("remainingTab");
 var completeTab = document.getElementById("completeTab");
-var progress = document.getElementById("progress");
 // Start of angular content
 var app1 = angular.module("app1", []);
 
@@ -22,26 +21,43 @@ app1.service("todoService", function($http) {
     var stats = {
       total: 0,
       numLeft: 0,
-      numComplete: 0
+      numComplete: 0,
+      progress
     };
 
-    var all = true;
-    var active = false;
-    var complete = false;
+    var tabs = {
+      all: true,
+      active: false,
+      complete: false
+    };
+
+    function getTabs() {
+        return tabs;
+    }
+
+    function removeCompleted() {
+        todos.forEach(function(todo) {
+            if(todo.done) {
+                deleteItem(todo, true);
+            }
+        });
+        reloadList();
+
+    }
 
     function selectTab(option) {
-        all = active = complete = false;
+        tabs.all = tabs.active = tabs.complete = false;
         if (option == 0) {
-            all = true;
+            tabs.all = true;
         }
         else if (option == 1) {
-            active = true;
+            tabs.active = true;
         }
         else if (option == 2) {
-            complete = true;
+            tabs.complete = true;
         }
         else {
-            all = true;
+            tabs.all = true;
         }
         reloadList();
     }
@@ -53,28 +69,18 @@ app1.service("todoService", function($http) {
     })
     .then(status)
     .then(data, function failure(response) {
-        console.log("failed here");
         error.textContent = "Failed to get list. Server returned " +
           response.status + " - " + response.statusText;
     })
     .then(function(data) {
-        console.log("fetched todo list");
-        this.todos = data;
-        console.log("the todos fetched are " + data);
-        console.log("and the length is " + this.todos.length)
-        calculateStats();
-        console.log("num total in statss is " + stats.total);
-        console.log("num complete in stats is " + stats.numComplete);
-        console.log("num remaining in stats is " + stats.numLeft);
+        todos = data;
+        calculateStats(data);
         return data;
     })
     .catch(function(newError) {
         console.log("Request failed " + newError);
     });
 
-    // return {
-    //     getTodos: getTodos
-    // };
 
     function createItem(title) {
         $http({
@@ -91,7 +97,6 @@ app1.service("todoService", function($http) {
         .then(function() {
             reloadList();
         }, function failure(reponse) {
-            console.log("failed here");
             error.textContent = "Failed to delete item. Server returned " +
               response.status + " - " + response.statusText
         })
@@ -99,7 +104,6 @@ app1.service("todoService", function($http) {
             console.log("Request failed " + newError);
         });
     }
-
 
     function deleteItem(todo, reload) {
         $http({
@@ -112,7 +116,6 @@ app1.service("todoService", function($http) {
               reloadList();
           }
         }, function failure(response) {
-            console.log("failed here");
             error.textContent = "Failed to delete item. Server returned " +
               response.status + " - " + response.statusText;
         })
@@ -135,7 +138,6 @@ app1.service("todoService", function($http) {
       .then(function() {
           reloadList();
       }, function failure(response) {
-          console.log("failed here");
           error.textContent = "Failed to edit item. Server returned " +
             response.status + " - " + response.statusText;
       })
@@ -154,27 +156,30 @@ app1.service("todoService", function($http) {
         deleteItem: deleteItem,
         modifyItem: modifyItem,
         createItem: createItem,
-        selectTab: selectTab
+        selectTab: selectTab,
+        getTabs: getTabs,
+        removeCompleted
     }
 
     function getStats() {
         return stats;
     }
 
-    function calculateStats() {
+    function calculateStats(data) {
       stats.numLeft = stats.total = stats.numComplete = 0;
-      console.log("num left is " + numLeft);
-        this.todos.forEach(function(todo) {
-          console.log(todo.title);
-          console.log(todo.done);
+        data.forEach(function(todo) {
             if(todo.done == false) {
-              console.log("adding");
                 stats.numLeft += 1;
             }
-            console.log("finished adding and num remaining is " + stats.numLeft);
         });
-        stats.total = this.todos.length;
+        stats.total = data.length;
         stats.numComplete = stats.total - stats.numLeft;
+
+        stats.progress = Math.floor(100 * stats.numComplete / (stats.numLeft + stats.numComplete));
+        if (stats.numLeft === 0 && stats.numComplete === 0) {
+            stats.progress = 0;
+        }
+
     }
 
     function reloadList() {
@@ -184,28 +189,23 @@ app1.service("todoService", function($http) {
         })
         .then(status)
         .then(data, function failure(response) {
-            console.log("failed here");
             error.textContent = "Failed to get list. Server returned " +
               response.status + " - " + response.statusText;
         })
         .then(function(data) {
-            console.log("fetched todo list and now going to update it");
-            // this.todos = data;
-            this.todos.length = 0;
+            todos.length = 0;
+            calculateStats(data);
             data.forEach(function(todo) {
-                if(active && !todo.done) {
-                    this.todos.push(todo);
+                if(tabs.active && !todo.done) {
+                    todos.push(todo);
                 }
-                else if (complete && todo.done) {
-                    this.todos.push(todo);
+                else if (tabs.complete && todo.done) {
+                    todos.push(todo);
                 }
-                else if(all) {
-                    this.todos.push(todo);
+                else if(tabs.all) {
+                    todos.push(todo);
                 }
             })
-            console.log("the todos been updated and are now " + this.todos);
-            console.log("and the length is " + this.todos.length)
-            calculateStats();
             return data;
         })
         .catch(function(newError) {
@@ -215,25 +215,18 @@ app1.service("todoService", function($http) {
 
 
     function repopulateTodos(data) {
-      this.todos.length = 0;
+      todos.length = 0;
       data.forEach(function(todo) {
-          this.todos.push(todo);
+          todos.push(todo);
       })
-      console.log("the todos been updated and are now " + this.todos);
-      console.log("and the length is " + this.todos.length)
     }
 
 
     function status(response) {
-        console.log("response is " + response.status);
         if (response.status >= 200 && response.status < 300) {
-            console.log("returning resolved promise");
             return Promise.resolve(response);
         }
         else {
-            // error.textContent = "Failed to " + currentMessage + ". Server returned " +
-            //   response.status + " - " + response.statusText;
-            console.log("returning rejected promise");
             return Promise.reject(response);
         }
     }
@@ -248,60 +241,52 @@ app1.controller("creator", ["$scope", "todoService", function($scope, todoServic
 
     $scope.loaded = false;
 
+    $scope.removeCompleted = function() {
+        todoService.removeCompleted();
+    }
+
     $scope.selectTab = function(option) {
         todoService.selectTab(option);
     }
 
     todoService.start.then(function(data) {
         $scope.loaded = true;
-        console.log("first controller received data");
         $scope.todos = data;
         $scope.stats = todoService.getStats();
-        console.log("stats left is  " + $scope.stats.numLeft  );
+        $scope.tabs = todoService.getTabs();
     });
-    // $scope.todos = todoService.getTodos();
-    console.log("todos in the controller are " + $scope.todos);
     $scope.newTitle = "";
 
-    $scope.refreshList = function() {
-        todoService.reloadList();
-    }
+    // $scope.refreshList = function() {
+    //     todoService.reloadList();
+    // }
+
     $scope.createItem = function() {
         // NOTE: prevent default here with event object if form validation fails
-        console.log("submitted with angular");
         todoService.createItem($scope.newTitle);
         $scope.newTitle = "";
     }
-    // $scope.addFake = function() {
-    //     $scope.todos.push({fake: "yep"});
-    // }
-    // console.log("todos.length is " + $scope.todos.length);
 }]);
 
 app1.controller("listView", function($scope, todoService) {
     todoService.start.then(function(data) {
         $scope.todos = data;
-        console.log("list view controllier list length is " + $scope.todos.length);
     })
 
     $scope.deleteItem = function(todo) {
         todoService.deleteItem(todo, true);
     }
 
-    // $scope.moddedTitle = "";
 
     $scope.editable = false;
 
     $scope.modifyItem = function(repeatScope) {
-        console.log("modifying");
-        console.log("new scope title is " + repeatScope.moddedTitle);
         repeatScope.todo.title = repeatScope.moddedTitle;
         todoService.modifyItem(repeatScope.todo);
     }
 
     $scope.changeEditable = function(repeatScope) {
         repeatScope.editable = true;
-        console.log(repeatScope.$index);
         var editableItem = document.getElementsByClassName('itemEntry')[repeatScope.$index];
         editableItem.disabled = false;
         editableItem.focus();
@@ -312,7 +297,6 @@ app1.controller("listView", function($scope, todoService) {
     }
 
     $scope.removeEditable = function(repeatScope) {
-        console.log("disabling");
         repeatScope.editable = false;
         var editableItem = document.getElementsByClassName('itemEntry')[repeatScope.$index];
         editableItem.disabled = true;

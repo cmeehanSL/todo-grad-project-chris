@@ -4,7 +4,7 @@ var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var countLabel = document.getElementById("count-label");
-var removeButton = document.getElementById("removeBtn");
+// var removeButton = document.getElementById("removeBtn");
 var allTab = document.getElementById("allTab");
 var remainingTab = document.getElementById("remainingTab");
 var completeTab = document.getElementById("completeTab");
@@ -26,9 +26,9 @@ var currentTimerID = 0;
 //     event.preventDefault();
 // };
 //
-removeButton.addEventListener("click", function() {
-    clearList();
-});
+// removeButton.addEventListener("click", function() {
+//     clearList();
+// });
 
 function setPollTimer() {
     clearTimeout(currentTimerID);
@@ -58,32 +58,32 @@ function json(response) {
     return response.json();
 }
 
-allTab.firstChild.addEventListener("click", function() {
-    allTab.className = "active";
-    remainingTab.className = completeTab.className = "";
-    displayActive = true;
-    displayComplete = true;
-    reloadTodoList();
-    progress.style.visibility = "visible";
-});
-
-remainingTab.firstChild.addEventListener("click", function() {
-    remainingTab.className = "active";
-    allTab.className = completeTab.className = "";
-    displayActive = true;
-    displayComplete = false;
-    reloadTodoList();
-    progress.style.visibility = "hidden";
-});
-
-completeTab.firstChild.addEventListener("click", function() {
-    completeTab.className = "active";
-    allTab.className = remainingTab.className = "";
-    displayActive = false;
-    displayComplete = true;
-    reloadTodoList();
-    progress.style.visibility = "hidden";
-});
+// allTab.firstChild.addEventListener("click", function() {
+//     allTab.className = "active";
+//     remainingTab.className = completeTab.className = "";
+//     displayActive = true;
+//     displayComplete = true;
+//     reloadTodoList();
+//     progress.style.visibility = "visible";
+// });
+//
+// remainingTab.firstChild.addEventListener("click", function() {
+//     remainingTab.className = "active";
+//     allTab.className = completeTab.className = "";
+//     displayActive = true;
+//     displayComplete = false;
+//     reloadTodoList();
+//     progress.style.visibility = "hidden";
+// });
+//
+// completeTab.firstChild.addEventListener("click", function() {
+//     completeTab.className = "active";
+//     allTab.className = remainingTab.className = "";
+//     displayActive = false;
+//     displayComplete = true;
+//     reloadTodoList();
+//     progress.style.visibility = "hidden";
+// });
 
 function createTodo(title, callback) {
     currentMessage = "create item";
@@ -200,7 +200,7 @@ function reloadTodoList() {
     //     todoList.removeChild(todoList.firstChild);
     // }
     todoListPlaceholder.style.display = "block";
-    document.getElementById("removeCompleted").style.visibility = "hidden";
+    // document.getElementById("removeCompleted").style.visibility = "hidden";
     // getTodoList(function(todos) {
     //     todoListPlaceholder.style.display = "none";
     //     todos.forEach(function(todo) {
