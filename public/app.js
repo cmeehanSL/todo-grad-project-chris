@@ -8,6 +8,7 @@ var removeButton = document.getElementById("removeBtn");
 var allTab = document.getElementById("allTab");
 var remainingTab = document.getElementById("remainingTab");
 var completeTab = document.getElementById("completeTab");
+var initialised = false;
 // Start of angular content
 var app1 = angular.module("app1", []);
 
@@ -19,16 +20,16 @@ app1.service("todoService", function($http) {
     var todos = [];
     var numLeft = 0;
     var stats = {
-      total: 0,
-      numLeft: 0,
-      numComplete: 0,
-      progress
+        total: 0,
+        numLeft: 0,
+        numComplete: 0,
+        progress: 0
     };
 
     var tabs = {
-      all: true,
-      active: false,
-      complete: false
+        all: true,
+        active: false,
+        complete: false
     };
 
     function getTabs() {
@@ -37,17 +38,16 @@ app1.service("todoService", function($http) {
 
     function removeCompleted() {
         todos.forEach(function(todo) {
-            if(todo.done) {
+            if (todo.done) {
                 deleteItem(todo, true);
             }
         });
         reloadList();
-
     }
 
     function selectTab(option) {
         tabs.all = tabs.active = tabs.complete = false;
-        if (option == 0) {
+        if (option === 0) {
             tabs.all = true;
         }
         else if (option == 1) {
@@ -61,7 +61,6 @@ app1.service("todoService", function($http) {
         }
         reloadList();
     }
-    // fetchTodos();
 
     var promise = $http({
         method: "GET",
@@ -69,6 +68,8 @@ app1.service("todoService", function($http) {
     })
     .then(status)
     .then(data, function failure(response) {
+        console.log("fail");
+        console.log("error text is " + error.textContent);
         error.textContent = "Failed to get list. Server returned " +
           response.status + " - " + response.statusText;
     })
@@ -80,7 +81,6 @@ app1.service("todoService", function($http) {
     .catch(function(newError) {
         console.log("Request failed " + newError);
     });
-
 
     function createItem(title) {
         $http({
@@ -96,9 +96,12 @@ app1.service("todoService", function($http) {
         .then(status)
         .then(function() {
             reloadList();
-        }, function failure(reponse) {
-            error.textContent = "Failed to delete item. Server returned " +
-              response.status + " - " + response.statusText
+        }, function failure(response) {
+            console.log("caught error");
+            error.textContent = "Failed to create item. Server returned " +
+              response.status + " - " + response.statusText;
+            console.log("changed");
+
         })
         .catch(function(newError) {
             console.log("Request failed " + newError);
@@ -112,9 +115,9 @@ app1.service("todoService", function($http) {
         })
         .then(status)
         .then(function() {
-          if (reload) {
-              reloadList();
-          }
+            if (reload) {
+                reloadList();
+            }
         }, function failure(response) {
             error.textContent = "Failed to delete item. Server returned " +
               response.status + " - " + response.statusText;
@@ -122,53 +125,39 @@ app1.service("todoService", function($http) {
         .catch(function(newError) {
             console.log("Request failed " + newError);
         });
-
     }
 
     function modifyItem(todo) {
-      $http({
-          method: "PUT",
-          url: "/api/todo/" + todo.id,
-          headers: {
-            "Content-type": "application/json"
-          },
-          data: todo
-      })
-      .then(status)
-      .then(function() {
-          reloadList();
-      }, function failure(response) {
-          error.textContent = "Failed to edit item. Server returned " +
+        $http({
+            method: "PUT",
+            url: "/api/todo/" + todo.id,
+            headers: {
+                "Content-type": "application/json"
+            },
+            data: todo
+        })
+        .then(status)
+        .then(function() {
+            reloadList();
+        }, function failure(response) {
+            error.textContent = "Failed to edit item. Server returned " +
             response.status + " - " + response.statusText;
-      })
-      .catch(function(newError) {
-          console.log("Request failed " + newError);
-      });
-
+        })
+        .catch(function(newError) {
+            console.log("Request failed " + newError);
+        });
     }
 
     // NOTE: may not actually need to return reloadList
-
-    return {
-        start: promise,
-        reloadList: reloadList,
-        getStats: getStats,
-        deleteItem: deleteItem,
-        modifyItem: modifyItem,
-        createItem: createItem,
-        selectTab: selectTab,
-        getTabs: getTabs,
-        removeCompleted
-    }
 
     function getStats() {
         return stats;
     }
 
     function calculateStats(data) {
-      stats.numLeft = stats.total = stats.numComplete = 0;
+        stats.numLeft = stats.total = stats.numComplete = 0;
         data.forEach(function(todo) {
-            if(todo.done == false) {
+            if (todo.done === false) {
                 stats.numLeft += 1;
             }
         });
@@ -179,7 +168,6 @@ app1.service("todoService", function($http) {
         if (stats.numLeft === 0 && stats.numComplete === 0) {
             stats.progress = 0;
         }
-
     }
 
     function reloadList() {
@@ -190,22 +178,22 @@ app1.service("todoService", function($http) {
         .then(status)
         .then(data, function failure(response) {
             error.textContent = "Failed to get list. Server returned " +
-              response.status + " - " + response.statusText;
+            response.status + " - " + response.statusText;
         })
         .then(function(data) {
             todos.length = 0;
             calculateStats(data);
             data.forEach(function(todo) {
-                if(tabs.active && !todo.done) {
+                if (tabs.active && !todo.done) {
                     todos.push(todo);
                 }
                 else if (tabs.complete && todo.done) {
                     todos.push(todo);
                 }
-                else if(tabs.all) {
+                else if (tabs.all) {
                     todos.push(todo);
                 }
-            })
+            });
             return data;
         })
         .catch(function(newError) {
@@ -213,14 +201,12 @@ app1.service("todoService", function($http) {
         });
     }
 
-
     function repopulateTodos(data) {
-      todos.length = 0;
-      data.forEach(function(todo) {
-          todos.push(todo);
-      })
+        todos.length = 0;
+        data.forEach(function(todo) {
+            todos.push(todo);
+        });
     }
-
 
     function status(response) {
         if (response.status >= 200 && response.status < 300) {
@@ -235,19 +221,31 @@ app1.service("todoService", function($http) {
         return response.data;
     }
 
+    return {
+        start: promise,
+        reloadList: reloadList,
+        getStats: getStats,
+        deleteItem: deleteItem,
+        modifyItem: modifyItem,
+        createItem: createItem,
+        selectTab: selectTab,
+        getTabs: getTabs,
+        removeCompleted: removeCompleted
+    };
 });
 
 app1.controller("creator", ["$scope", "todoService", function($scope, todoService) {
 
     $scope.loaded = false;
+    $scope.newTitle = "";
 
     $scope.removeCompleted = function() {
         todoService.removeCompleted();
-    }
+    };
 
     $scope.selectTab = function(option) {
         todoService.selectTab(option);
-    }
+    };
 
     todoService.start.then(function(data) {
         $scope.loaded = true;
@@ -255,56 +253,45 @@ app1.controller("creator", ["$scope", "todoService", function($scope, todoServic
         $scope.stats = todoService.getStats();
         $scope.tabs = todoService.getTabs();
     });
-    $scope.newTitle = "";
-
-    // $scope.refreshList = function() {
-    //     todoService.reloadList();
-    // }
 
     $scope.createItem = function() {
         // NOTE: prevent default here with event object if form validation fails
         todoService.createItem($scope.newTitle);
         $scope.newTitle = "";
-    }
+    };
 }]);
 
 app1.controller("listView", function($scope, todoService) {
     todoService.start.then(function(data) {
         $scope.todos = data;
-    })
+    });
 
     $scope.deleteItem = function(todo) {
         todoService.deleteItem(todo, true);
-    }
-
-
-    $scope.editable = false;
+    };
 
     $scope.modifyItem = function(repeatScope) {
         repeatScope.todo.title = repeatScope.moddedTitle;
         todoService.modifyItem(repeatScope.todo);
-    }
+    };
 
     $scope.changeEditable = function(repeatScope) {
-        repeatScope.editable = true;
-        var editableItem = document.getElementsByClassName('itemEntry')[repeatScope.$index];
+        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
         editableItem.disabled = false;
         editableItem.focus();
-    }
+    };
 
     $scope.fireClick = function($event) {
         $event.preventDefault();
-    }
+    };
 
     $scope.removeEditable = function(repeatScope) {
-        repeatScope.editable = false;
-        var editableItem = document.getElementsByClassName('itemEntry')[repeatScope.$index];
+        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
         editableItem.disabled = true;
-    }
-
+    };
 
     $scope.completeItem = function(todo) {
         todo.done = !todo.done;
         todoService.modifyItem(todo);
-    }
+    };
 });

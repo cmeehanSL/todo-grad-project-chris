@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="app1" ng-init="person = Chris">
+<html lang="en" ng-app="app1">
     <head>
         <meta charset="utf-8">
         <title>TODO List</title>
@@ -40,6 +40,7 @@
         </div>
         <div ng-controller="listView as $ctrl" ng-include src="'todo-list.html'">
         </div>
+        <div id="error"></div>
       </div>
     </body>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>

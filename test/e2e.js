@@ -84,9 +84,9 @@ testing.describe("end to end", function() {
             helpers.addTodo("Second todo item");
             helpers.addTodo("Third todo item");
             helpers.addTodo("Fourth todo item");
-            helpers.deleteTodo(3);
             helpers.deleteTodo(1);
-            helpers.deleteTodo(2);
+            helpers.deleteTodo(1);
+            helpers.deleteTodo(1);
             helpers.getTodoList().then(function(elements) {
                 assert.equal(elements.length, 1);
             });
