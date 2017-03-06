@@ -23,9 +23,9 @@ module.exports.setupDriver = function() {
 module.exports.setupServer = function(done) {
     router = express.Router();
     if (gatheringCoverage) {
-        router.get("/main.js", function(req, res) {
-            var absPath = path.join(__dirname, "..", "public", "main.js");
-            res.send(instrumenter.instrumentSync(fs.readFileSync("public/main.js", "utf8"), absPath));
+        router.get("/app.js", function(req, res) {
+            var absPath = path.join(__dirname, "..", "public", "app.js");
+            res.send(instrumenter.instrumentSync(fs.readFileSync("public/app.js", "utf8"), absPath));
         });
     }
     server = createServer(testPort, router, done);
@@ -96,26 +96,39 @@ module.exports.getTodoText = function(child) {
 };
 
 module.exports.deleteTodo = function(child) {
+    var targetCSS = "#todo-list li:nth-child(" + child + ") .deleteBtn";
     var deleteButton;
+
     driver.wait(function() {
-        return driver.isElementPresent(webdriver.By.css("#todo-list li:nth-child(" +
-        child + ") .deleteBtn"));
+        return driver.isElementPresent(webdriver.By.css(targetCSS));
     }, 5000);
-    deleteButton = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" + child + ") .deleteBtn"));
+    deleteButton = driver.findElement(webdriver.By.css(targetCSS));
     deleteButton.click();
-    // driver.executeScript("arguments[0].checked = true;", deleteButton);
 };
 
 module.exports.editTodo = function(child, text) {
-    var editBtn = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" + child + ") .editBtn"));
-    editBtn.click();
-    var inputField = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
-      child + ") .itemEntry"));
+    var targetCSS = "#todo-list li:nth-child(" + child + ") .editBtn";
+    var inputTargetCSS = "#todo-list li:nth-child(" + child + ") .itemEntry";
+    var editButton;
+    var confirmButton;
+    var inputField;
+
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css(targetCSS));
+    }, 5000);
+
+    editButton = driver.findElement(webdriver.By.css(targetCSS));
+    editButton.click();
+
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css(inputTargetCSS));
+    }, 5000);
+
+    inputField = driver.findElement(webdriver.By.css(inputTargetCSS));
+
     inputField.clear();
     inputField.sendKeys(text);
-    var confirmButton = driver.findElement(webdriver.By.css("#todo-list li:nth-child(" +
-      child + ") .confirmEditButton"));
-    confirmButton.click();
+    inputField.submit();
 };
 
 module.exports.setupErrorRoute = function(action, route) {
