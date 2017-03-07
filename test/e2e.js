@@ -118,4 +118,61 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("on completing an item", function() {
+        testing.it("displays the remove completed button", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo item");
+            helpers.completeTodo(1);
+            helpers.getRemoveButtonVisibility().then(function(display) {
+                assert.isTrue(display);
+            });
+        });
+        testing.it("removes completed items on remove button click", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First");
+            helpers.addTodo("Second");
+            helpers.completeTodo(2);
+            helpers.removeCompleted();
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+        });
+        testing.it("displays correct item count in each sub-list", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo");
+            helpers.addTodo("Second todo");
+            helpers.addTodo("Third todo");
+            helpers.completeTodo(2);
+            helpers.navigateToTab(3);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 1);
+            });
+            helpers.getBadgeCount(3).then(function(text) {
+                assert.equal(text, "1");
+            });
+            helpers.navigateToTab(2);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 2);
+            });
+            helpers.getBadgeCount(2).then(function(text) {
+                assert.equal(text, "2");
+            });
+        });
+        testing.it("displays the correct completion percentage", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("First todo");
+            helpers.addTodo("Second todo");
+            helpers.addTodo("Third todo");
+            helpers.addTodo("Fourth todo");
+            helpers.completeTodo(2);
+            helpers.completeTodo(3);
+            helpers.getCompletion().then(function(text) {
+                assert.equal(text, "50%");
+            });
+            helpers.completeTodo(4);
+            helpers.getCompletion().then(function(text) {
+                assert.equal(text, "75%");
+            });
+        });
+    });
 });

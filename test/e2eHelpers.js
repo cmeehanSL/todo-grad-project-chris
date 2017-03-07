@@ -81,10 +81,6 @@ module.exports.addTodo = function(text) {
 
 module.exports.getTodoText = function(child) {
     var inputField;
-    //   driver.wait(until.elementLocated(webdriver.By.css("#todo-list li:nth-child(" +
-    //     child + ") .itemEntry")), 5 * 1000).then(function(elm) {
-    //     inputField = elm;
-    // });
     driver.wait(function() {
         return driver.isElementPresent(webdriver.By.css("#todo-list li:nth-child(" +
         child + ") .itemEntry"));
@@ -129,6 +125,46 @@ module.exports.editTodo = function(child, text) {
     inputField.clear();
     inputField.sendKeys(text);
     inputField.submit();
+};
+
+module.exports.completeTodo = function(child) {
+    var targetCSS = "#todo-list li:nth-child(" + child + ") .completeBtn";
+    var completeButton;
+
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.css(targetCSS));
+    }, 5000);
+    completeButton = driver.findElement(webdriver.By.css(targetCSS));
+    completeButton.click();
+};
+
+module.exports.getRemoveButtonVisibility = function() {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("removeCompleted"));
+    }, 5000);
+
+    return driver.findElement(webdriver.By.id("removeCompleted")).isDisplayed();
+};
+
+module.exports.navigateToTab = function(child) {
+    var tab = driver.findElement(webdriver.By.css(".tabs li:nth-child(" + child + ") a"));
+    tab.click();
+};
+
+module.exports.getBadgeCount = function(child) {
+    return driver.findElement(webdriver.By.css(".tabs li:nth-child(" + child + ") .badge")).getText();
+};
+
+module.exports.removeCompleted = function() {
+    driver.wait(function() {
+        return driver.isElementPresent(webdriver.By.id("removeCompleted"));
+    }, 5000);
+
+    driver.findElement(webdriver.By.id("removeCompleted")).click();
+};
+
+module.exports.getCompletion = function() {
+    return driver.findElement(webdriver.By.id("progress-bar")).getText();
 };
 
 module.exports.setupErrorRoute = function(action, route) {

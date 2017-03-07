@@ -17,7 +17,7 @@
           <div ng-controller="creator">
             <h2 ng-show="!loaded" id="todo-list-placeholder">Loading...</h2>
             <div class="jumbotron">
-                  <ul class="nav nav-pills" role="tablist">
+                  <ul class="tabs nav nav-pills" role="tablist">
                     <li role="presentation" id="allTab" ng-class="{active: tabs.all}"><a ng-click="selectTab(0)" href="">All<span ng-bind="stats.total" class="badge"></span></a></li>
                     <li role="presentation" id="remainingTab" ng-class="{active: tabs.active}"><a ng-click="selectTab(1)" href="">Active<span ng-bind="stats.numLeft" class="badge pull-right"></span></a></li>
                     <li role="presentation" id="completeTab" ng-class="{active: tabs.complete}"><a ng-click="selectTab(2)" href="">Complete<span ng-bind="stats.numComplete" class="badge pull-right"></span></a></li>
@@ -33,7 +33,7 @@
                   </form>
               </div>
           <div id="progress" class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" ng-style="{width: stats.progress + '%'}">
+              <div id="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" ng-style="{width: stats.progress + '%'}">
                 {{stats.progress}}%
               </div>
           </div>
