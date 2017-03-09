@@ -1,8 +1,85 @@
+;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+//app.js
+// var angular = require("angular");
+// Requuired angular components
+var todoService = require("./services/todoService");
+var creator = require("./controllers/creator");
+var listController = require("./controllers/listController");
 
 // Start of angular content
 var app1 = angular.module("app1", []);
+angular.module("app1").service("todoService", todoService);
+angular.module("app1").controller("creator", ["$scope", "todoService", creator]);
+angular.module("app1").controller("listController", ["$scope", "todoService", listController]);
 
-app1.service("todoService", function($http) {
+},{"./controllers/creator":2,"./controllers/listController":3,"./services/todoService":4}],2:[function(require,module,exports){
+module.exports = function($scope, todoService) {
+    console.log("hi");
+    $scope.loaded = false;
+    $scope.newTitle = "";
+    $scope.stats = todoService.getStats();
+    $scope.tabs = todoService.getTabs();
+
+    $scope.removeCompleted = function() {
+        todoService.removeCompleted();
+    };
+
+    $scope.selectTab = function(option) {
+        todoService.selectTab(option);
+    };
+
+    todoService.start.then(function(data) {
+        $scope.loaded = true;
+        $scope.todos = data;
+    });
+
+    $scope.createItem = function() {
+        // NOTE: prevent default here with event object if form validation fails
+        todoService.createItem($scope.newTitle);
+        $scope.newTitle = "";
+    };
+}
+
+},{}],3:[function(require,module,exports){
+module.exports = function($scope, todoService) {
+        todoService.start.then(function(data) {
+            $scope.todos = data;
+        });
+
+        $scope.deleteItem = function(todo) {
+            todoService.deleteItem(todo, true);
+        };
+
+        $scope.modifyItem = function(repeatScope) {
+            repeatScope.todo.title = repeatScope.moddedTitle;
+            todoService.modifyItem(repeatScope.todo);
+        };
+
+        $scope.changeEditable = function(repeatScope) {
+            repeatScope.editable = true;
+            var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
+            editableItem.disabled = false;
+            editableItem.focus();
+        };
+
+        $scope.fireClick = function($event) {
+            $event.preventDefault();
+        };
+
+        $scope.removeEditable = function(repeatScope) {
+            repeatScope.editable = false;
+            var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
+            editableItem.disabled = true;
+        };
+
+        $scope.completeItem = function(todo) {
+            todo.done = !todo.done;
+            todoService.modifyItem(todo);
+        };
+}
+
+},{}],4:[function(require,module,exports){
+module.exports = function todoService($http) {
     var todos = [];
     var numLeft = 0;
     var stats = {
@@ -218,66 +295,7 @@ app1.service("todoService", function($http) {
         getTabs: getTabs,
         removeCompleted: removeCompleted
     };
-});
+}
 
-app1.controller("creator", ["$scope", "todoService", function($scope, todoService) {
-
-    $scope.loaded = false;
-    $scope.newTitle = "";
-
-    $scope.removeCompleted = function() {
-        todoService.removeCompleted();
-    };
-
-    $scope.selectTab = function(option) {
-        todoService.selectTab(option);
-    };
-
-    todoService.start.then(function(data) {
-        $scope.loaded = true;
-        $scope.todos = data;
-        $scope.stats = todoService.getStats();
-        $scope.tabs = todoService.getTabs();
-    });
-
-    $scope.createItem = function() {
-        // NOTE: prevent default here with event object if form validation fails
-        todoService.createItem($scope.newTitle);
-        $scope.newTitle = "";
-    };
-}]);
-
-app1.controller("listController", function($scope, todoService) {
-    todoService.start.then(function(data) {
-        $scope.todos = data;
-    });
-
-    $scope.deleteItem = function(todo) {
-        todoService.deleteItem(todo, true);
-    };
-
-    $scope.modifyItem = function(repeatScope) {
-        repeatScope.todo.title = repeatScope.moddedTitle;
-        todoService.modifyItem(repeatScope.todo);
-    };
-
-    $scope.changeEditable = function(repeatScope) {
-        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-        editableItem.disabled = false;
-        editableItem.focus();
-    };
-
-    $scope.fireClick = function($event) {
-        $event.preventDefault();
-    };
-
-    $scope.removeEditable = function(repeatScope) {
-        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-        editableItem.disabled = true;
-    };
-
-    $scope.completeItem = function(todo) {
-        todo.done = !todo.done;
-        todoService.modifyItem(todo);
-    };
-});
+},{}]},{},[2,4,3,1])
+;

@@ -5,10 +5,17 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-mocha-istanbul");
     grunt.loadNpmTasks("grunt-express-server");
     grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks("grunt-watchify");
 
     var testOutputLocation = process.env.CIRCLE_TEST_REPORTS || "test_output";
     var artifactsLocation = "build_artifacts";
     grunt.initConfig({
+        watchify: {
+            dev: {
+                src: "./public/app/**/*.js",
+                dest: "./public/build/bundle.js"
+            }
+        },
         watch: {
             options: {
                 livereload: true
@@ -20,7 +27,6 @@ module.exports = function(grunt) {
                     spawn: false
                 }
             }
-
         },
         express: {
             options: {
@@ -117,7 +123,7 @@ module.exports = function(grunt) {
         "istanbul_check_coverage"]);
     grunt.registerTask("ci-test", ["check", "mochaTest:ci", "mocha_istanbul:ci", "istanbul_report",
         "istanbul_check_coverage"]);
-    grunt.registerTask("serve", ["express:dev", "watch"]);
+    grunt.registerTask("serve", ["express:dev", "watchify:dev", "watch"]);
     grunt.registerTask("default", "test");
 
 };

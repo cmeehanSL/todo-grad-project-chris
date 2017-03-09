@@ -1,8 +1,4 @@
-
-// Start of angular content
-var app1 = angular.module("app1", []);
-
-app1.service("todoService", function($http) {
+module.exports = function todoService($http) {
     var todos = [];
     var numLeft = 0;
     var stats = {
@@ -218,66 +214,4 @@ app1.service("todoService", function($http) {
         getTabs: getTabs,
         removeCompleted: removeCompleted
     };
-});
-
-app1.controller("creator", ["$scope", "todoService", function($scope, todoService) {
-
-    $scope.loaded = false;
-    $scope.newTitle = "";
-
-    $scope.removeCompleted = function() {
-        todoService.removeCompleted();
-    };
-
-    $scope.selectTab = function(option) {
-        todoService.selectTab(option);
-    };
-
-    todoService.start.then(function(data) {
-        $scope.loaded = true;
-        $scope.todos = data;
-        $scope.stats = todoService.getStats();
-        $scope.tabs = todoService.getTabs();
-    });
-
-    $scope.createItem = function() {
-        // NOTE: prevent default here with event object if form validation fails
-        todoService.createItem($scope.newTitle);
-        $scope.newTitle = "";
-    };
-}]);
-
-app1.controller("listController", function($scope, todoService) {
-    todoService.start.then(function(data) {
-        $scope.todos = data;
-    });
-
-    $scope.deleteItem = function(todo) {
-        todoService.deleteItem(todo, true);
-    };
-
-    $scope.modifyItem = function(repeatScope) {
-        repeatScope.todo.title = repeatScope.moddedTitle;
-        todoService.modifyItem(repeatScope.todo);
-    };
-
-    $scope.changeEditable = function(repeatScope) {
-        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-        editableItem.disabled = false;
-        editableItem.focus();
-    };
-
-    $scope.fireClick = function($event) {
-        $event.preventDefault();
-    };
-
-    $scope.removeEditable = function(repeatScope) {
-        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-        editableItem.disabled = true;
-    };
-
-    $scope.completeItem = function(todo) {
-        todo.done = !todo.done;
-        todoService.modifyItem(todo);
-    };
-});
+}
