@@ -2,12 +2,13 @@
     <li ng-repeat="todo in todos">
         <div class="row">
             <div class="itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7">
-              <form ng-submit="modifyItem(this)">
+              <form name="itemForm" ng-submit="modifyItem(this)">
                 <div class="input-group input-group-lg">
-                    <input ng-model="moddedTitle" ng-blur="removeEditable(this)" ng-class="{completedItem: todo.done}" ng-value=todo.title type='text' class='form-control itemEntry' disabled="disabled">
+                    <input name="mod" todo-entry ng-model="todo.title" ng-focus="setTemp(this)" ng-blur="removeEditable(this)" ng-class="{completedItem: todo.done}" type='text' class='form-control itemEntry' disabled="disabled">
                     <span class="input-group-btn">
                       <button ng-mousedown="fireClick($event)" type="submit" class="btn btn-default confirmEditButton" ng-show="editable">Confirm</button>
                     </span>
+                    <!-- <span>Must not be blank, currently have {{moddedTitle}}</span> -->
                 </div>
               </form>
             </div>

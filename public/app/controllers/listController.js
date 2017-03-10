@@ -8,9 +8,13 @@ module.exports = function($scope, todoService) {
         };
 
         $scope.modifyItem = function(repeatScope) {
-            repeatScope.todo.title = repeatScope.moddedTitle;
+            // repeatScope.todo.title = repeatScope.moddedTitle;
             todoService.modifyItem(repeatScope.todo);
         };
+
+        $scope.setTemp = function(repeatScope) {
+            repeatScope.tempValue = repeatScope.todo.title;
+        }
 
         $scope.changeEditable = function(repeatScope) {
             repeatScope.editable = true;
@@ -27,6 +31,7 @@ module.exports = function($scope, todoService) {
             repeatScope.editable = false;
             var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
             editableItem.disabled = true;
+            repeatScope.todo.title = repeatScope.tempValue;
         };
 
         $scope.completeItem = function(todo) {

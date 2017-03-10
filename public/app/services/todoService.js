@@ -13,6 +13,38 @@ module.exports = function todoService($http) {
         active: false,
         complete: false
     };
+    
+    var promise = $http({
+        method: "GET",
+        url: "/api/todo"
+    })
+    .then(status)
+    .then(data, function failure(response) {
+        console.log("fail");
+        console.log("error text is " + error.textContent);
+        error.textContent = "Failed to get list. Server returned " +
+        response.status + " - " + response.statusText;
+    })
+    .then(function(data) {
+        todos = data;
+        calculateStats(data);
+        return data;
+    })
+    .catch(function(newError) {
+        console.log("Request failed " + newError);
+    });
+
+    return {
+        start: promise,
+        reloadList: reloadList,
+        getStats: getStats,
+        deleteItem: deleteItem,
+        modifyItem: modifyItem,
+        createItem: createItem,
+        selectTab: selectTab,
+        getTabs: getTabs,
+        removeCompleted: removeCompleted
+    };
 
     function getTabs() {
         return tabs;
@@ -44,25 +76,6 @@ module.exports = function todoService($http) {
         reloadList();
     }
 
-    var promise = $http({
-        method: "GET",
-        url: "/api/todo"
-    })
-    .then(status)
-    .then(data, function failure(response) {
-        console.log("fail");
-        console.log("error text is " + error.textContent);
-        error.textContent = "Failed to get list. Server returned " +
-          response.status + " - " + response.statusText;
-    })
-    .then(function(data) {
-        todos = data;
-        calculateStats(data);
-        return data;
-    })
-    .catch(function(newError) {
-        console.log("Request failed " + newError);
-    });
 
     function createItem(title) {
         $http({
@@ -203,15 +216,4 @@ module.exports = function todoService($http) {
         return response.data;
     }
 
-    return {
-        start: promise,
-        reloadList: reloadList,
-        getStats: getStats,
-        deleteItem: deleteItem,
-        modifyItem: modifyItem,
-        createItem: createItem,
-        selectTab: selectTab,
-        getTabs: getTabs,
-        removeCompleted: removeCompleted
-    };
 }

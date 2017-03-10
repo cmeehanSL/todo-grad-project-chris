@@ -1,20 +1,20 @@
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 //app.js
-// var angular = require("angular");
 // Requuired angular components
 var todoService = require("./services/todoService");
 var creator = require("./controllers/creator");
 var listController = require("./controllers/listController");
+var todoEntry = require("./directives/todoEntry");
 
 // Start of angular content
 var app1 = angular.module("app1", []);
-angular.module("app1").service("todoService", todoService);
-angular.module("app1").controller("creator", ["$scope", "todoService", creator]);
-angular.module("app1").controller("listController", ["$scope", "todoService", listController]);
+app1.service("todoService", todoService);
+app1.directive("todoEntry", todoEntry);
+app1.controller("creator", ["$scope", "todoService", creator]);
+app1.controller("listController", ["$scope", "todoService", listController]);
 
-},{"./controllers/creator":2,"./controllers/listController":3,"./services/todoService":4}],2:[function(require,module,exports){
+},{"./controllers/creator":2,"./controllers/listController":3,"./directives/todoEntry":4,"./services/todoService":5}],2:[function(require,module,exports){
 module.exports = function($scope, todoService) {
-    console.log("hi");
     $scope.loaded = false;
     $scope.newTitle = "";
     $scope.stats = todoService.getStats();
@@ -51,9 +51,13 @@ module.exports = function($scope, todoService) {
         };
 
         $scope.modifyItem = function(repeatScope) {
-            repeatScope.todo.title = repeatScope.moddedTitle;
+            // repeatScope.todo.title = repeatScope.moddedTitle;
             todoService.modifyItem(repeatScope.todo);
         };
+
+        $scope.setTemp = function(repeatScope) {
+            repeatScope.tempValue = repeatScope.todo.title;
+        }
 
         $scope.changeEditable = function(repeatScope) {
             repeatScope.editable = true;
@@ -70,6 +74,7 @@ module.exports = function($scope, todoService) {
             repeatScope.editable = false;
             var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
             editableItem.disabled = true;
+            repeatScope.todo.title = repeatScope.tempValue;
         };
 
         $scope.completeItem = function(todo) {
@@ -79,6 +84,27 @@ module.exports = function($scope, todoService) {
 }
 
 },{}],4:[function(require,module,exports){
+module.exports = function() {
+    return {
+        restrict: 'AEC',
+        scope: false,
+        require: 'ngModel',
+        link: function(scope, elm, attrs, ctrl) {
+            ctrl.$validators.todoEntry = function(modelValue, viewValue) {
+                console.log(scope.todo.title);
+                if (ctrl.$isEmpty(modelValue)) {
+                    // consider empty entries to be invalid
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            };
+        }
+    }
+}
+
+},{}],5:[function(require,module,exports){
 module.exports = function todoService($http) {
     var todos = [];
     var numLeft = 0;
@@ -93,6 +119,38 @@ module.exports = function todoService($http) {
         all: true,
         active: false,
         complete: false
+    };
+    
+    var promise = $http({
+        method: "GET",
+        url: "/api/todo"
+    })
+    .then(status)
+    .then(data, function failure(response) {
+        console.log("fail");
+        console.log("error text is " + error.textContent);
+        error.textContent = "Failed to get list. Server returned " +
+        response.status + " - " + response.statusText;
+    })
+    .then(function(data) {
+        todos = data;
+        calculateStats(data);
+        return data;
+    })
+    .catch(function(newError) {
+        console.log("Request failed " + newError);
+    });
+
+    return {
+        start: promise,
+        reloadList: reloadList,
+        getStats: getStats,
+        deleteItem: deleteItem,
+        modifyItem: modifyItem,
+        createItem: createItem,
+        selectTab: selectTab,
+        getTabs: getTabs,
+        removeCompleted: removeCompleted
     };
 
     function getTabs() {
@@ -125,25 +183,6 @@ module.exports = function todoService($http) {
         reloadList();
     }
 
-    var promise = $http({
-        method: "GET",
-        url: "/api/todo"
-    })
-    .then(status)
-    .then(data, function failure(response) {
-        console.log("fail");
-        console.log("error text is " + error.textContent);
-        error.textContent = "Failed to get list. Server returned " +
-          response.status + " - " + response.statusText;
-    })
-    .then(function(data) {
-        todos = data;
-        calculateStats(data);
-        return data;
-    })
-    .catch(function(newError) {
-        console.log("Request failed " + newError);
-    });
 
     function createItem(title) {
         $http({
@@ -284,18 +323,7 @@ module.exports = function todoService($http) {
         return response.data;
     }
 
-    return {
-        start: promise,
-        reloadList: reloadList,
-        getStats: getStats,
-        deleteItem: deleteItem,
-        modifyItem: modifyItem,
-        createItem: createItem,
-        selectTab: selectTab,
-        getTabs: getTabs,
-        removeCompleted: removeCompleted
-    };
 }
 
-},{}]},{},[2,4,3,1])
+},{}]},{},[2,3,4,5,1])
 ;

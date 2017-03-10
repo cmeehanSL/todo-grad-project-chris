@@ -1,5 +1,4 @@
 module.exports = function($scope, todoService) {
-    console.log("hi");
     $scope.loaded = false;
     $scope.newTitle = "";
     $scope.stats = todoService.getStats();
