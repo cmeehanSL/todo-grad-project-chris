@@ -3,28 +3,12 @@
         <div class="row">
             <div class="itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7">
               <form name="itemForm" ng-submit="modifyItem(this)">
-                <div class="input-group input-group-lg">
+                <div class="item-input input-group input-group-lg">
                     <input name="mod" todo-entry ng-model="todo.title" ng-focus="setTemp(this)" ng-blur="removeEditable(this)" ng-class="{completedItem: todo.done}" type='text' class='form-control itemEntry' disabled="disabled">
-                    <span class="input-group-btn">
-                      <button ng-mousedown="fireClick($event)" type="submit" class="btn btn-default confirmEditButton" ng-show="editable">Confirm</button>
-                    </span>
-                    <!-- <span>Must not be blank, currently have {{moddedTitle}}</span> -->
                 </div>
               </form>
             </div>
-            <div class="buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                <div role="group" class="btn-group btn-lg">
-                    <button ng-click="changeEditable(this)" type="button" ng-disabled="todo.done" class="itemBtn editBtn btn-primary btn-outline btn-lg">
-                        <span class="glyphicon glyphicon-pencil"></span>
-                    </button>
-                    <button ng-click="deleteItem(todo)" type="button" class="itemBtn deleteBtn btn-primary btn-outline btn-lg">
-                        <span class="glyphicon glyphicon-remove-circle"></span>
-                    </button>
-                    <button ng-click="completeItem(todo)" type="button" ng-class="[ {true: 'tick itemBtn completeBtn btn-primary btn-lg'}[true], {false: 'btn-outline'}[todo.done]]">
-                        <span class="glyphicon glyphicon-ok"></span>
-                    </button>
-                </div>
-            </div>
+            <item-button-set todo="todo" index="$index"></item-button-set>
         </div>
     </li>
 </ul>

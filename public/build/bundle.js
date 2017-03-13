@@ -5,15 +5,35 @@ var todoService = require("./services/todoService");
 var creator = require("./controllers/creator");
 var listController = require("./controllers/listController");
 var todoEntry = require("./directives/todoEntry");
+var itemButtonSet = require("./directives/itemButtonSet");
 
 // Start of angular content
 var app1 = angular.module("app1", []);
 app1.service("todoService", todoService);
 app1.directive("todoEntry", todoEntry);
+app1.directive("itemButtonSet", itemButtonSet);
 app1.controller("creator", ["$scope", "todoService", creator]);
 app1.controller("listController", ["$scope", "todoService", listController]);
 
-},{"./controllers/creator":2,"./controllers/listController":3,"./directives/todoEntry":4,"./services/todoService":5}],2:[function(require,module,exports){
+},{"./controllers/creator":3,"./controllers/listController":4,"./directives/itemButtonSet":5,"./directives/todoEntry":6,"./services/todoService":7}],2:[function(require,module,exports){
+module.exports = function buttonSetController($scope, todoService) {
+    $scope.makeEditable = function() {
+        var editableItem = document.getElementsByClassName("itemEntry")[$scope.index];
+        editableItem.disabled = false;
+        editableItem.focus();
+    }
+
+    $scope.deleteItem = function(todo) {
+        todoService.deleteItem(todo, true);
+    }
+
+    $scope.completeItem = function(todo) {
+        todo.done = !todo.done;
+        todoService.modifyItem(todo);
+    }
+}
+
+},{}],3:[function(require,module,exports){
 module.exports = function($scope, todoService) {
     $scope.loaded = false;
     $scope.newTitle = "";
@@ -40,18 +60,13 @@ module.exports = function($scope, todoService) {
     };
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = function($scope, todoService) {
         todoService.start.then(function(data) {
             $scope.todos = data;
         });
 
-        $scope.deleteItem = function(todo) {
-            todoService.deleteItem(todo, true);
-        };
-
         $scope.modifyItem = function(repeatScope) {
-            // repeatScope.todo.title = repeatScope.moddedTitle;
             todoService.modifyItem(repeatScope.todo);
         };
 
@@ -59,31 +74,34 @@ module.exports = function($scope, todoService) {
             repeatScope.tempValue = repeatScope.todo.title;
         }
 
-        $scope.changeEditable = function(repeatScope) {
-            repeatScope.editable = true;
-            var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-            editableItem.disabled = false;
-            editableItem.focus();
-        };
-
         $scope.fireClick = function($event) {
             $event.preventDefault();
         };
 
         $scope.removeEditable = function(repeatScope) {
-            repeatScope.editable = false;
             var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
             editableItem.disabled = true;
             repeatScope.todo.title = repeatScope.tempValue;
         };
 
-        $scope.completeItem = function(todo) {
-            todo.done = !todo.done;
-            todoService.modifyItem(todo);
-        };
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+var buttonSetController = require("../controllers/buttonSetController");
+
+module.exports = function() {
+    return {
+        restrict: 'E',
+        templateUrl: "app/templates/button-set.html",
+        scope: {
+            todo: '=',
+            index: '='
+        },
+        controller: ['$scope', 'todoService', buttonSetController]
+    }
+}
+
+},{"../controllers/buttonSetController":2}],6:[function(require,module,exports){
 module.exports = function() {
     return {
         restrict: 'AEC',
@@ -91,9 +109,7 @@ module.exports = function() {
         require: 'ngModel',
         link: function(scope, elm, attrs, ctrl) {
             ctrl.$validators.todoEntry = function(modelValue, viewValue) {
-                console.log(scope.todo.title);
                 if (ctrl.$isEmpty(modelValue)) {
-                    // consider empty entries to be invalid
                     return false;
                 }
                 else {
@@ -104,7 +120,7 @@ module.exports = function() {
     }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function todoService($http) {
     var todos = [];
     var numLeft = 0;
@@ -325,5 +341,5 @@ module.exports = function todoService($http) {
 
 }
 
-},{}]},{},[2,3,4,5,1])
+},{}]},{},[3,6,7,1,4,5])
 ;

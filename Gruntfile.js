@@ -39,13 +39,15 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            all: ["Gruntfile.js", "server.js", "server/**/*.js", "test/**/*.js", "public/**/*.js"],
+            all: ["Gruntfile.js", "server.js", "server/**/*.js",
+                "test/**/*.js", "public/**/*.js", "!public/build/*.js"],
             options: {
-                node: true
+                node: true,
             }
         },
         jscs: {
-            all: ["Gruntfile.js", "server.js", "server/**/*.js", "test/**/*.js", "public/**/*.js"]
+            all: ["Gruntfile.js", "server.js", "server/**/*.js",
+                "test/**/*.js", "public/**/*.js", "!public/build/*.js"]
         },
         mochaTest: {
             test: {

@@ -13,7 +13,7 @@ module.exports = function todoService($http) {
         active: false,
         complete: false
     };
-    
+
     var promise = $http({
         method: "GET",
         url: "/api/todo"
@@ -75,7 +75,6 @@ module.exports = function todoService($http) {
         }
         reloadList();
     }
-
 
     function createItem(title) {
         $http({
@@ -216,4 +215,4 @@ module.exports = function todoService($http) {
         return response.data;
     }
 
-}
+};

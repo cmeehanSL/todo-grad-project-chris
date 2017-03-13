@@ -22,4 +22,4 @@ module.exports = function($scope, todoService) {
         todoService.createItem($scope.newTitle);
         $scope.newTitle = "";
     };
-}
+};

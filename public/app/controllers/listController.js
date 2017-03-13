@@ -1,41 +1,23 @@
 module.exports = function($scope, todoService) {
-        todoService.start.then(function(data) {
-            $scope.todos = data;
-        });
+    todoService.start.then(function(data) {
+        $scope.todos = data;
+    });
 
-        $scope.deleteItem = function(todo) {
-            todoService.deleteItem(todo, true);
-        };
+    $scope.modifyItem = function(repeatScope) {
+        todoService.modifyItem(repeatScope.todo);
+    };
 
-        $scope.modifyItem = function(repeatScope) {
-            // repeatScope.todo.title = repeatScope.moddedTitle;
-            todoService.modifyItem(repeatScope.todo);
-        };
+    $scope.setTemp = function(repeatScope) {
+        repeatScope.tempValue = repeatScope.todo.title;
+    };
 
-        $scope.setTemp = function(repeatScope) {
-            repeatScope.tempValue = repeatScope.todo.title;
-        }
+    $scope.fireClick = function($event) {
+        $event.preventDefault();
+    };
 
-        $scope.changeEditable = function(repeatScope) {
-            repeatScope.editable = true;
-            var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-            editableItem.disabled = false;
-            editableItem.focus();
-        };
-
-        $scope.fireClick = function($event) {
-            $event.preventDefault();
-        };
-
-        $scope.removeEditable = function(repeatScope) {
-            repeatScope.editable = false;
-            var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
-            editableItem.disabled = true;
-            repeatScope.todo.title = repeatScope.tempValue;
-        };
-
-        $scope.completeItem = function(todo) {
-            todo.done = !todo.done;
-            todoService.modifyItem(todo);
-        };
-}
+    $scope.removeEditable = function(repeatScope) {
+        var editableItem = document.getElementsByClassName("itemEntry")[repeatScope.$index];
+        editableItem.disabled = true;
+        repeatScope.todo.title = repeatScope.tempValue;
+    };
+};

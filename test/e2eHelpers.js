@@ -23,9 +23,9 @@ module.exports.setupDriver = function() {
 module.exports.setupServer = function(done) {
     router = express.Router();
     if (gatheringCoverage) {
-        router.get("/app.js", function(req, res) {
-            var absPath = path.join(__dirname, "..", "public", "app.js");
-            res.send(instrumenter.instrumentSync(fs.readFileSync("public/app.js", "utf8"), absPath));
+        router.get("/build/bundle.js", function(req, res) {
+            var absPath = path.join(__dirname, "..", "public", "build/bundle.js");
+            res.send(instrumenter.instrumentSync(fs.readFileSync("public/build/bundle.js", "utf8"), absPath));
         });
     }
     server = createServer(testPort, router, done);
@@ -164,7 +164,7 @@ module.exports.removeCompleted = function() {
 };
 
 module.exports.getCompletion = function() {
-    return driver.findElement(webdriver.By.id("progress-bar")).getText();
+    return driver.findElement(webdriver.By.css(".progress-bar")).getText();
 };
 
 module.exports.setupErrorRoute = function(action, route) {
