@@ -1,0 +1,14 @@
+<ul id="todo-list">
+    <li ng-repeat="todo in todos">
+        <div class="row">
+            <div class="itemCell col-lg-7 col-md-7 col-sm-7 col-xs-7">
+              <form name="itemForm" ng-submit="modifyItem(this)">
+                <div class="item-input input-group input-group-lg">
+                    <input name="mod" todo-entry ng-model="todo.title" ng-focus="setTemp(this)" ng-blur="removeEditable(this)" ng-class="{completedItem: todo.done}" type='text' class='form-control itemEntry' disabled="disabled">
+                </div>
+              </form>
+            </div>
+            <item-button-set todo="todo" index="$index"></item-button-set>
+        </div>
+    </li>
+</ul>

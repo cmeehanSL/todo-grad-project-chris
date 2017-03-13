@@ -1,0 +1,13 @@
+<div class="buttonsCell col-lg-5 col-md-5 col-sm-5 col-xs-5">
+    <div role="group" class="btn-group btn-lg">
+        <button ng-click="makeEditable()" type="button" ng-disabled="todo.done" class="itemBtn editBtn btn-primary btn-outline btn-lg">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+        <button ng-click="deleteItem(todo)" type="button" class="itemBtn deleteBtn btn-primary btn-outline btn-lg">
+            <span class="glyphicon glyphicon-remove-circle"></span>
+        </button>
+        <button ng-click="completeItem(todo)" type="button" ng-class="[ {true: 'tick itemBtn completeBtn btn-primary btn-lg'}[true], {false: 'btn-outline'}[todo.done]]">
+            <span class="glyphicon glyphicon-ok"></span>
+        </button>
+    </div>
+</div>
